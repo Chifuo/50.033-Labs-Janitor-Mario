@@ -1,10 +1,7 @@
 using UnityEngine;
-using System.Collections;
-using System.Collections.Generic;
-
 public class PlayerMovement : MonoBehaviour
 {
-    public float speed = 10;
+    public float speed = 100;
     private Rigidbody2D marioBody;
     private SpriteRenderer marioSprite;
     private bool faceRightState = true;
@@ -33,7 +30,7 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
-    public float maxSpeed = 20;
+    public float maxSpeed = 200;
     // FixedUpdate is called 50 times a second
     private void FixedUpdate()
     {
