@@ -17,7 +17,6 @@ public class PlayerMovement : MonoBehaviour
     // Update is called once per frame
     private void Update()
     {
-        // where you implement game logic
         if (Input.GetKeyDown("a") && faceRightState)
         {
             faceRightState = false;
@@ -31,7 +30,6 @@ public class PlayerMovement : MonoBehaviour
     }
 
     public float maxSpeed = 200;
-    // FixedUpdate is called 50 times a second
     private void FixedUpdate()
     {
         float moveHorizontal = Input.GetAxisRaw("Horizontal");

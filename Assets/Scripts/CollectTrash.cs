@@ -1,7 +1,9 @@
 using UnityEngine;
 
 public class CollectTrash : MonoBehaviour
-{ 
+{
+    // Upon touching collision area of trash, icon appears
+    // Player hold F for 3 second to 'pick up' trash
     public float Timer = 3;
     public bool CollideTrash = false;
     private void Update()
@@ -9,7 +11,6 @@ public class CollectTrash : MonoBehaviour
         if (CollideTrash == true && Input.GetKey(KeyCode.F))
         {
             Timer -= 1 * Time.deltaTime;
-            Debug.Log("Collecting trash");
         }
         if (Input.GetKeyUp(KeyCode.F))
         {
@@ -19,8 +20,7 @@ public class CollectTrash : MonoBehaviour
         {
             Timer = 0;
             Destroy(gameObject);
-            
-            Debug.Log("Collected trash");
+            // TODO: Update score
         }
     }
     private void OnTriggerEnter2D(Collider2D other)
@@ -30,9 +30,6 @@ public class CollectTrash : MonoBehaviour
             SpriteRenderer spriteRenderer = transform.Find("icon").GetComponentInChildren<SpriteRenderer>();
             spriteRenderer.enabled = true;
             CollideTrash = true;
-            //CollectingTrash.Add(other.gameObject);
-            Debug.Log("Collided with trash");
-            Debug.Log(CollideTrash);
         }
     }
     private void OnTriggerExit2D(Collider2D other)
@@ -42,8 +39,6 @@ public class CollectTrash : MonoBehaviour
             SpriteRenderer spriteRenderer = transform.Find("icon").GetComponentInChildren<SpriteRenderer>();
             spriteRenderer.enabled = false;
             CollideTrash = false;
-            Debug.Log("No longer collide with trash");
-            Debug.Log(CollideTrash);
         }
     }
 }
