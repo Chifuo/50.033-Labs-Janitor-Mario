@@ -1,26 +1,31 @@
-using UnityEngine;
-using System.Collections;
-using System.Collections.Generic;
 using TMPro;
+using UnityEngine;
 
-public class HUDManager : MonoBehaviour 
+public class HUDManager : MonoBehaviour
 {
-    private Vector3[] scoreTextPosition =
-    {
-        new Vector3(-699,444,0),
-        new Vector3 (0,0,0),
-    };
-
     public GameObject scoreText;
+    public GameObject deliveriesText;
 
-    public void GameStart()
+    private TMP_Text scoreLabel;
+    private TMP_Text deliveriesLabel;
+
+    private void Awake()
     {
-        scoreText.transform.localPosition = scoreTextPosition[0];
+        if (scoreText != null)
+            scoreLabel = scoreText.GetComponent<TMP_Text>();
+        if (deliveriesText != null)
+            deliveriesLabel = deliveriesText.GetComponent<TMP_Text>();
     }
 
     public void SetScore(int score)
     {
-        scoreText.GetComponent<TextMeshProUGUI>().text = "Score: " + score.ToString();
+        if (scoreLabel != null)
+            scoreLabel.text = $"Score: {score}";
     }
 
+    public void SetDeliveries(int count)
+    {
+        if (deliveriesLabel != null)
+            deliveriesLabel.text = $"Goomba Deliveries: {count}";
+    }
 }

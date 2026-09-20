@@ -8,30 +8,45 @@ public class TrashGenerator : MonoBehaviour
     [Min(5)] public int MinimumTrashCount = 5;
 
     private readonly List<GameObject> activeTrash = new List<GameObject>();
+    private GameManager gameManager;
 
     private void Start()
-    { ReplenishTrash(); }
-
+    {
+        gameManager = FindFirstObjectByType<GameManager>();
+        ReplenishTrash();
+    }
 
     private void Update()
     {
+        if (gameManager != null && gameManager.IsGameOver)
+            return;
         activeTrash.RemoveAll(trash => trash == null);
         ReplenishTrash();
     }
 
     private void ReplenishTrash()
     {
-        while (activeTrash.Count < Mathf.Max(5, MinimumTrashCount))
-        { SpawnTrash(); }
-    }
-    // Spawn trash in random coordinate of 256x256 grid, randomise trash sprite
-    private void SpawnTrash()
-    {
-        Vector3 TrashSpawnCoordinate = new Vector3(Random.Range(-128, 128), Random.Range(-128, 128), 0);
-        GameObject NewTrash = Instantiate(TrashPrefab, TrashSpawnCoordinate, Quaternion.identity);
-        activeTrash.Add(NewTrash);
-        var NewTrashSprite = TrashSprites[Random.Range(0, TrashSprites.Length)];
-        NewTrash.transform.Find("trash").GetComponentInChildren<SpriteRenderer>().sprite = NewTrashSprite;
+        int groundCount = 0;
+        foreach (GameObject trash in activeTrash)
+        {
+            if (trash != null && (!trash.TryGetComponent(out CollectTrash collectible) || collectible.IsOnGround))
+                groundCount++;
+        }
+        while (groundCount < Mathf.Max(5, MinimumTrashCount))
+        {
+            SpawnTrash();
+            groundCount++;
+        }
     }
 
+    // Spawn inside the 256 x 256 map with a random trash sprite.
+    // If we implement coin multipliers, we could refactor this such that coins also spawn in a 256 x 256 map.
+    private void SpawnTrash()
+    {
+        Vector3 spawnPosition = new Vector3(Random.Range(-128, 128), Random.Range(-128, 128), 0);
+        GameObject newTrash = Instantiate(TrashPrefab, spawnPosition, Quaternion.identity);
+        activeTrash.Add(newTrash);
+        var sprite = TrashSprites[Random.Range(0, TrashSprites.Length)];
+        newTrash.transform.Find("trash").GetComponentInChildren<SpriteRenderer>().sprite = sprite;
+    }
 }
