@@ -20,7 +20,7 @@ public class CollectTrash : MonoBehaviour
         {
             Timer = 0;
             Destroy(gameObject);
-            // TODO: Update score
+            FindObjectOfType<GameManager>().IncreaseScore(1);
         }
     }
     private void OnTriggerEnter2D(Collider2D other)
