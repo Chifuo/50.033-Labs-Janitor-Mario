@@ -1,8 +1,13 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 public class PlayerMovement : MonoBehaviour
 {
     public Animator marioAnimator;
+    public UnityEvent deathFinished = new UnityEvent();
+    public UnityEvent goombaShooed = new UnityEvent();
+    public float deathImpulse = 50f;
+    public float deathGravityScale = 10f;
     public float speed = 100;
     public float maxSpeed = 200;
     public KeyCode dashKey = KeyCode.LeftShift;
@@ -16,6 +21,7 @@ public class PlayerMovement : MonoBehaviour
     private float dashTimeRemaining;
     private float cooldownRemaining;
     private bool isDashing;
+    private bool isDying;
     private Vector2 movementInput;
     private GameManager gameManager;
     private readonly HashSet<EnemyMovement> fightingGoombas = new HashSet<EnemyMovement>();
@@ -35,6 +41,38 @@ public class PlayerMovement : MonoBehaviour
         fightingGoombas.Remove(enemy);
     }
 
+    public void BeginDeath()
+    {
+        if (isDying)
+            return;
+
+        isDying = true;
+        isDashing = false;
+        marioBody.linearVelocity = Vector2.zero;
+        GetComponent<Collider2D>().enabled = false;
+        marioAnimator.ResetTrigger("onSkid");
+        marioAnimator.Play("mario-die", 0, 0f);
+    }
+
+    public void PlayDeathImpulse()
+    {
+        if (!isDying)
+            return;
+
+        marioBody.gravityScale = deathGravityScale;
+        marioBody.linearDamping = 0f;
+        marioBody.AddForce(Vector2.up * deathImpulse, ForceMode2D.Impulse);
+    }
+
+    public void FinishDeath()
+    {
+        if (!isDying)
+            return;
+
+        Time.timeScale = 0f;
+        deathFinished.Invoke();
+    }
+
     private void Start()
     {
         marioSprite = GetComponent<SpriteRenderer>();
@@ -43,6 +81,9 @@ public class PlayerMovement : MonoBehaviour
     }
     private void Update()
     {
+        if (isDying)
+            return;
+
         marioAnimator.SetFloat("xSpeed", marioBody.linearVelocity.magnitude);
 
         if (IsFightingGoomba || (gameManager != null && gameManager.IsGameOver))
@@ -84,6 +125,9 @@ public class PlayerMovement : MonoBehaviour
 
     private void FixedUpdate()
     {
+        if (isDying)
+            return;
+
         if (gameManager != null && gameManager.IsGameOver)
         {
             marioBody.linearVelocity = Vector2.zero;

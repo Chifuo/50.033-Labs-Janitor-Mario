@@ -8,7 +8,9 @@ public class GameManager : MonoBehaviour
     public UnityEvent gameOver = new UnityEvent();
     public UnityEvent gameRestart = new UnityEvent();
     public UnityEvent<int> scoreChange = new UnityEvent<int>();
+    public UnityEvent scoreIncreased = new UnityEvent();
     public UnityEvent<int> deliveryCountChange = new UnityEvent<int>();
+    public UnityEvent goombaDeliveredTrash = new UnityEvent();
     [Min(1)] public int deliveriesToLose = 3;
 
     public bool IsGameOver { get; private set; }
@@ -33,6 +35,7 @@ public class GameManager : MonoBehaviour
             return;
         score += increment;
         SetScore(score);
+        scoreIncreased.Invoke();
     }
     public void SetScore(int score)
     {
@@ -53,6 +56,7 @@ public class GameManager : MonoBehaviour
 
         GoombaDeliveries++;
         deliveryCountChange.Invoke(GoombaDeliveries);
+        goombaDeliveredTrash.Invoke();
         if (GoombaDeliveries >= Mathf.Max(1, deliveriesToLose))
             GameOver();
     }

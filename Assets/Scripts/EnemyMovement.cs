@@ -232,6 +232,7 @@ public class EnemyMovement : MonoBehaviour
         enemyBody.linearVelocity = Vector2.zero;
         retreatUntil = Time.time + Mathf.Max(0f, retreatDuration);
         nextPathTime = retreatUntil;
+        fightingPlayer.goombaShooed.Invoke();
         EndFight();
     }
 
