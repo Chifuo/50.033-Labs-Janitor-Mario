@@ -2210,7 +2210,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: pipe_green_top_up
+      name: trashcollector
       rect:
         serializedVersion: 2
         x: 614
@@ -3112,7 +3112,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: brick_grey2
+      name: ground
       rect:
         serializedVersion: 2
         x: 413
@@ -3288,7 +3288,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: marble_brown
+      name: brick
       rect:
         serializedVersion: 2
         x: 373
@@ -7397,28 +7397,6 @@ TextureImporter:
       bones: []
       spriteID: a1505410000000000800000000000000
       internalID: 21300506
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: misc-3_254
-      rect:
-        serializedVersion: 2
-        x: 11
-        y: 557
-        width: 252
-        height: 23
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: c1505410000000000800000000000000
-      internalID: 21300508
       vertices: []
       indices: 
       edges: []
@@ -13957,11 +13935,33 @@ TextureImporter:
       indices: 
       edges: []
       weights: []
+    - serializedVersion: 2
+      name: coin
+      rect:
+        serializedVersion: 2
+        x: 439
+        y: 1075
+        width: 10
+        height: 14
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 37a9d892c7f373b419b7378533fc0f4b
+      internalID: 1546165525
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     outline: []
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: 1f52a9bdb35a5ff4ebd98b91271d5873
     internalID: 0
     vertices: []
     indices: 
@@ -13996,6 +13996,7 @@ TextureImporter:
       bowser_4: 21300768
       bowser_fire_1: 21300810
       bowser_fire_2: 21300812
+      brick: 21300134
       brick_brown1: 21300026
       brick_brown2: 21300114
       brick_brown_piece: 21300032
@@ -14003,7 +14004,6 @@ TextureImporter:
       brick_green2: 21300116
       brick_green_piece: 21300042
       brick_grey1: 21300030
-      brick_grey2: 21300118
       brick_grey_piece: 21300066
       bridge_piece: 21300376
       bridge_rope: 21300364
@@ -14015,6 +14015,7 @@ TextureImporter:
       castle_small_left: 21300226
       castle_small_right: 21301102
       castle_wall: 21300336
+      coin: 1546165525
       coin1_1: 21300146
       coin1_2: 21300166
       coin1_3: 21300168
@@ -14043,6 +14044,7 @@ TextureImporter:
       goal_flag_green: 21300088
       goal_pole_green: 21300018
       goal_top_green: 21301100
+      ground: 21300118
       ground1_brown: 21300136
       ground1_green: 21300138
       ground1_grey: 21300142
@@ -14057,7 +14059,6 @@ TextureImporter:
       hud_coin3_3: 21300204
       lava_mid: 21300378
       lava_top: 21300368
-      marble_brown: 21300134
       marble_green: 21300140
       marble_grey: 21300144
       mario_fire_1: 21300826
@@ -14427,6 +14428,7 @@ TextureImporter:
       misc-3_497: 21300994
       misc-3_498: 21300996
       misc-3_499: 21300998
+      misc-3_5: 7556834
       misc-3_500: 21301000
       misc-3_501: 21301002
       misc-3_502: 21301004
@@ -14501,7 +14503,6 @@ TextureImporter:
       pipe_green_mid: 21300126
       pipe_green_top_down: 21300156
       pipe_green_top_side: 21300124
-      pipe_green_top_up: 21300036
       pipe_silver_mid: 21300242
       pipe_silver_top_body: 21300230
       pipe_silver_top_down: 21300268
@@ -14519,6 +14520,7 @@ TextureImporter:
       starman_3: 21300100
       starman_4: 21300102
       toad: 21300338
+      trashcollector: 21300036
       tree_chunk: 21300272
       tree_top_left: 21300256
       tree_top_mid: 21300258

@@ -5,7 +5,7 @@ using UnityEngine;
 [RequireComponent(typeof(Rigidbody2D), typeof(BoxCollider2D))]
 public class EnemyMovement : MonoBehaviour
 {
-    public TrashCollector collector;
+
     public KeyCode shooKey = KeyCode.Space;
     [Min(0f)] public float retreatSpeed = 5f;
     [Min(0f)] public float retreatDuration = 0.3f;
@@ -23,6 +23,7 @@ public class EnemyMovement : MonoBehaviour
     private SpriteRenderer enemySprite;
     private GridPathfinder2D pathfinder;
     private CollectTrash target;
+    public TrashCollector collector;
     private readonly List<Vector2> path = new List<Vector2>();
     private int waypointIndex;
     private float nextPathTime;
@@ -46,12 +47,11 @@ public class EnemyMovement : MonoBehaviour
         colliderOffset = (Vector2)enemyCollider.bounds.center - enemyBody.position;
         pathfinder = new GridPathfinder2D(navigationBounds, cellSize, CanTravel); //
         gameManager = FindFirstObjectByType<GameManager>();
-        if (collector == null) { }
-        //Debug.LogWarning("collector is not asigned");
     }
 
     private void Update()
     {
+        collector = FindFirstObjectByType<TrashCollector>();
         if (gameManager != null && gameManager.IsGameOver)
         {
             EndFight();

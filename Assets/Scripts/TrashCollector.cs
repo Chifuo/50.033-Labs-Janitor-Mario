@@ -4,7 +4,7 @@ public class TrashCollector : MonoBehaviour
 {
     public Transform dropOffPoint;
     [Min(0.1f)] public float deliveryRadius = 3f;
-    public GameManager gameManager;
+    private GameManager gameManager;
 
     public Vector2 DropOffPosition => dropOffPoint != null ? (Vector2)dropOffPoint.position : (Vector2)transform.position;
 
@@ -24,6 +24,7 @@ public class TrashCollector : MonoBehaviour
             return false;
 
         gameManager.RecordGoombaDelivery();
+        Destroy(gameObject);
         return true;
     }
 
