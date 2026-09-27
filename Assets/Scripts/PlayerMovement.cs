@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 public class PlayerMovement : MonoBehaviour
 {
+    public Animator marioAnimator;
     public float speed = 100;
     public float maxSpeed = 200;
     public KeyCode dashKey = KeyCode.LeftShift;
@@ -42,6 +43,8 @@ public class PlayerMovement : MonoBehaviour
     }
     private void Update()
     {
+        marioAnimator.SetFloat("xSpeed", marioBody.linearVelocity.magnitude);
+
         if (IsFightingGoomba || (gameManager != null && gameManager.IsGameOver))
             return;
 
@@ -50,11 +53,18 @@ public class PlayerMovement : MonoBehaviour
 
         if (movementInput.x < 0f && faceRightState)
         {
+            if (marioBody.linearVelocity.x > 0.1f)
+                marioAnimator.SetTrigger("onSkid");
+
             faceRightState = false;
             marioSprite.flipX = true;
         }
+
         if (movementInput.x > 0f && !faceRightState)
         {
+            if (marioBody.linearVelocity.x < -0.1f)
+                marioAnimator.SetTrigger("onSkid");
+
             faceRightState = true;
             marioSprite.flipX = false;
         }
