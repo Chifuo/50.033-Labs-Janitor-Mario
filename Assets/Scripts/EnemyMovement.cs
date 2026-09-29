@@ -391,9 +391,6 @@ public class EnemyMovement : MonoBehaviour
             Invoke(nameof(HideAlert), 1f);
         }
 
-        if (goombaAnimator != null)
-            goombaAnimator.SetTrigger("onShoo");
-
         if (visual != null)
         {
             if (hopRoutine != null)
