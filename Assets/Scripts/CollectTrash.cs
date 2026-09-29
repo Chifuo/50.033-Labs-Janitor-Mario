@@ -74,6 +74,9 @@ public class CollectTrash : MonoBehaviour
         if (pickupCollider != null)
             pickupCollider.enabled = false;
         ResetPlayerInteraction();
+        GeneratorManager generator = FindFirstObjectByType<GeneratorManager>();
+        if (generator != null)
+            generator.RelocateTrashCollector();
         return true;
     }
 

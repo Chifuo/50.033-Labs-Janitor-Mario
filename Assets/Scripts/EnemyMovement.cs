@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -6,47 +7,26 @@ using UnityEngine;
 public class EnemyMovement : MonoBehaviour
 {
 
-    public KeyCode shooKey = KeyCode.Space;
-    [Min(0f)] public float retreatSpeed = 5f;
-    [Min(0f)] public float retreatDuration = 0.3f;
-    [Min(0f)] public float carryHeight = 12f;
-    [Min(0f)] public float droppedTrashProtection = 4f;
-    [Min(0f)] public float moveSpeed = 5f;
-    [Min(0.1f)] public float stoppingDistance = 2f;
-    [Min(0.1f)] public float repathInterval = 0.75f;
-    [Min(1f)] public float cellSize = 8f;
-    public Rect navigationBounds = new Rect(-128f, -128f, 256f, 256f);
-    public LayerMask obstacleLayers = ~0;
-
+    // Shared components 
     private Rigidbody2D enemyBody;
     private BoxCollider2D enemyCollider;
-    private SpriteRenderer enemySprite;
-    private GridPathfinder2D pathfinder;
-    private CollectTrash target;
-    public TrashCollector collector;
-    private readonly List<Vector2> path = new List<Vector2>();
-    private int waypointIndex;
-    private float nextPathTime;
-    private Vector2 bodySize;
-    private Vector2 colliderOffset;
-    private CollectTrash carriedTrash;
     private GameManager gameManager;
-    private PlayerMovement fightingPlayer;
-    private Vector2 retreatDirection;
-    private float retreatUntil;
-
     public Vector2 Position => enemyBody != null ? enemyBody.position : (Vector2)transform.position;
-    public bool IsCarryingTrash => carriedTrash != null;
 
     private void Start()
     {
         enemyBody = GetComponent<Rigidbody2D>();
         enemyCollider = GetComponent<BoxCollider2D>();
-        enemySprite = GetComponent<SpriteRenderer>();
+        enemySprite = GetComponentInChildren<SpriteRenderer>();
+        if (goombaAnimator == null)
+            goombaAnimator = GetComponentInChildren<Animator>();
+
         bodySize = (Vector2)enemyCollider.bounds.size + Vector2.one * 0.2f;
         colliderOffset = (Vector2)enemyCollider.bounds.center - enemyBody.position;
-        pathfinder = new GridPathfinder2D(navigationBounds, cellSize, CanTravel); //
+        pathfinder = new GridPathfinder2D(navigationBounds, cellSize, CanTravel);
         gameManager = FindFirstObjectByType<GameManager>();
+        if (visual != null)
+            visualRestPosition = visual.localPosition;
     }
 
     private void Update()
@@ -62,11 +42,11 @@ public class EnemyMovement : MonoBehaviour
             if (!fightingPlayer.isActiveAndEnabled)
             {
                 EndFight();
-                return;
+                // return; // Keep planning movement after the interaction ends uncomment to make it such that mario and goomba velocity = 0 upon contact.
             }
-            if (Input.GetKeyDown(shooKey))
+            else if (Input.GetKeyDown(shooKey))
                 ShooAway();
-            return;
+            // return; // Contact allows shooing without pausing route planning, // uncomment to make it such that mario and goomba velocity = 0 upon contact.
         }
         if (collector == null || Time.time < retreatUntil)
             return;
@@ -79,6 +59,88 @@ public class EnemyMovement : MonoBehaviour
         }
     }
 
+    private void FixedUpdate()
+    {
+        enemyBody.linearVelocity = Vector2.zero;
+        if (gameManager != null && gameManager.IsGameOver)
+            return;
+        // Keep following the route while touching Mario
+        // uncomment to make it such that mario and goomba velocity = 0 upon contact.
+        // if (fightingPlayer != null)
+        //     return;
+        if (Time.time < retreatUntil)
+        {
+            Vector2 step = retreatDirection * Mathf.Max(0f, retreatSpeed) * Time.fixedDeltaTime;
+            if (CanTravel(Position, Position + step))
+                enemyBody.linearVelocity = step / Time.fixedDeltaTime;
+            return;
+        }
+        if (collector == null ||
+            (carriedTrash == null && (target == null || !target.CanEnemyPickUp)) || waypointIndex >= path.Count)
+            return;
+
+        Vector2 position = enemyBody.position;
+        float arrivalDistance = carriedTrash != null ? collector.deliveryRadius : stoppingDistance;
+        // Only stop near the final waypoint
+        if (waypointIndex == path.Count - 1 &&
+            Vector2.Distance(position, path[waypointIndex]) <= arrivalDistance && CanTravel(position, path[waypointIndex]))
+        {
+            CompleteArrival();
+            return;
+        }
+
+        while (waypointIndex < path.Count && Vector2.Distance(position, path[waypointIndex]) < 0.1f)
+            waypointIndex++;
+        if (waypointIndex >= path.Count)
+        {
+            CompleteArrival();
+            return;
+        }
+
+        Vector2 delta = path[waypointIndex] - position;
+        Vector2 velocity = Vector2.ClampMagnitude(delta / Time.fixedDeltaTime, Mathf.Max(0f, moveSpeed));
+        enemyBody.linearVelocity = AvoidGoombas(velocity, delta.magnitude);
+        if (enemySprite != null && Mathf.Abs(enemyBody.linearVelocity.x) > 0.01f)
+            enemySprite.flipX = enemyBody.linearVelocity.x > 0f;
+    }
+
+    private void OnDisable()
+    {
+        avoidanceUntil = 0f;
+        EndFight();
+        if (carriedTrash != null)
+            carriedTrash.Drop(this, Position, droppedTrashProtection);
+        carriedTrash = null;
+        if (enemyBody != null)
+            enemyBody.linearVelocity = Vector2.zero;
+        target = null;
+        path.Clear();
+        nextPathTime = 0f;
+
+        CancelInvoke(nameof(HideAlert));
+        HideAlert();
+
+        if (hopRoutine != null)
+        {
+            StopCoroutine(hopRoutine);
+            hopRoutine = null;
+
+            if (visual != null)
+                visual.localPosition = visualRestPosition;
+        }
+    }
+
+    [Min(0f)] public float moveSpeed = 5f;
+    [Min(0.1f)] public float stoppingDistance = 2f;
+    [Min(0.1f)] public float repathInterval = 0.75f;
+    [Min(1f)] public float cellSize = 8f;
+    public Rect navigationBounds = new Rect(-128f, -128f, 256f, 256f);
+    private GridPathfinder2D pathfinder;
+    private CollectTrash target;
+    private readonly List<Vector2> path = new List<Vector2>();
+    private int waypointIndex;
+    private float nextPathTime;
+
     private void FindRoute()
     {
         waypointIndex = 0;
@@ -88,7 +150,7 @@ public class EnemyMovement : MonoBehaviour
             return;
         }
 
-        // keep pursuing the current trash until it disappears or becomes unreachable
+        // Keep pursuing trash until it disappears or becomes unreachable.
         if (target != null && target.CanEnemyPickUp && PlanRoute(target.transform.position, stoppingDistance))
             return;
 
@@ -118,53 +180,17 @@ public class EnemyMovement : MonoBehaviour
             return true;
         }
         bool found = pathfinder.FindPath(enemyBody.position, destination, path);
-        // Replanning mid-edge must not send Goomba backwards to its starting grid node.
+        // Replanning mid-edge shouldnt send Goomba backwards to its starting grid node.
         if (found && path.Count > 1 && CanTravel(enemyBody.position, path[1]))
             path.RemoveAt(0);
         return found;
     }
 
-    private void FixedUpdate()
-    {
-        enemyBody.linearVelocity = Vector2.zero;
-        if (gameManager != null && gameManager.IsGameOver)
-            return;
-        if (fightingPlayer != null)
-            return;
-        if (Time.time < retreatUntil)
-        {
-            Vector2 step = retreatDirection * Mathf.Max(0f, retreatSpeed) * Time.fixedDeltaTime;
-            if (CanTravel(Position, Position + step))
-                enemyBody.linearVelocity = step / Time.fixedDeltaTime;
-            return;
-        }
-        if (collector == null ||
-            (carriedTrash == null && (target == null || !target.CanEnemyPickUp)) || waypointIndex >= path.Count)
-            return;
-
-        Vector2 position = enemyBody.position;
-        float arrivalDistance = carriedTrash != null ? collector.deliveryRadius : stoppingDistance;
-        // Only stop near the final waypoint, never across a wall from the target.
-        if (waypointIndex == path.Count - 1 &&
-            Vector2.Distance(position, path[waypointIndex]) <= arrivalDistance && CanTravel(position, path[waypointIndex]))
-        {
-            CompleteArrival();
-            return;
-        }
-
-        while (waypointIndex < path.Count && Vector2.Distance(position, path[waypointIndex]) < 0.1f)
-            waypointIndex++;
-        if (waypointIndex >= path.Count)
-        {
-            CompleteArrival();
-            return;
-        }
-
-        Vector2 delta = path[waypointIndex] - position;
-        enemyBody.linearVelocity = Vector2.ClampMagnitude(delta / Time.fixedDeltaTime, Mathf.Max(0f, moveSpeed));
-        if (enemySprite != null && Mathf.Abs(delta.x) > 0.01f)
-            enemySprite.flipX = delta.x > 0f;
-    }
+    // Trash pickup and delivery
+    public TrashCollector collector;
+    [Min(0f)] public float carryHeight = 12f;
+    private CollectTrash carriedTrash;
+    public bool IsCarryingTrash => carriedTrash != null;
 
     private void CompleteArrival()
     {
@@ -185,70 +211,82 @@ public class EnemyMovement : MonoBehaviour
         path.Clear();
         waypointIndex = 0;
         nextPathTime = 0f;
+        avoidanceUntil = 0f;
     }
 
-    private void OnCollisionEnter2D(Collision2D collision)
+    // Step right when another Goomba blocks the route.
+    [Min(0.05f)] public float avoidanceLookAhead = 0.3f;
+    private static readonly float[] avoidanceAngles = { -30f, -60f, -90f, 30f, 60f, 90f };
+    private Vector2 avoidanceDirection;
+    private float avoidanceUntil;
+
+    private Vector2 AvoidGoombas(Vector2 desiredVelocity, float waypointDistance)
     {
-        InteractWithPlayer(collision.collider);
+        float speed = desiredVelocity.magnitude;
+        if (speed <= 0f)
+            return Vector2.zero;
+
+        float lookAhead = Mathf.Min(waypointDistance,
+            speed * Mathf.Max(Time.fixedDeltaTime, avoidanceLookAhead));
+        // Hold a sidestep briefly instead of switching left/right every physics tick.
+        if (Time.time < avoidanceUntil && CanAvoidTowards(avoidanceDirection, lookAhead))
+            return avoidanceDirection * speed;
+
+        Vector2 forward = desiredVelocity / speed;
+        if (CanAvoidTowards(forward, lookAhead))
+            return desiredVelocity;
+
+        foreach (float angle in avoidanceAngles)
+        {
+            Vector2 direction = Quaternion.Euler(0f, 0f, angle) * forward;
+            if (!CanAvoidTowards(direction, lookAhead))
+                continue;
+
+            avoidanceDirection = direction;
+            avoidanceUntil = Time.time + 0.25f;
+            return direction * speed;
+        }
+
+        // Wait if neither side has space
+        avoidanceUntil = 0f;
+        return Vector2.zero;
     }
 
-    private void OnCollisionStay2D(Collision2D collision)
+    private bool CanAvoidTowards(Vector2 direction, float distance)
     {
-        InteractWithPlayer(collision.collider);
+        if (!CanTravel(Position, Position + direction * distance))
+            return false;
+
+        // Check all layers so avoidance also works when Goombas aren't in obstacleLayers.
+        foreach (RaycastHit2D hit in Physics2D.BoxCastAll(Position + colliderOffset,
+            bodySize, 0f, direction, distance))
+        {
+            if (hit.collider == null || hit.collider == enemyCollider || hit.collider.isTrigger)
+                continue;
+            EnemyMovement other = hit.collider.GetComponentInParent<EnemyMovement>();
+            if (other == null || other == this)
+                continue;
+
+            // If already touching, allow a step away instead of getting stuck together or move together
+            Vector2 away = (Vector2)enemyCollider.bounds.center - (Vector2)hit.collider.bounds.center;
+            if (hit.distance <= 0f && Vector2.Dot(direction, away) > 0f)
+                continue;
+            return false;
+        }
+        return true;
     }
 
-    private void InteractWithPlayer(Collider2D other)
-    {
-        if (fightingPlayer != null || Time.time < retreatUntil || !other.CompareTag("Player") ||
-            (gameManager != null && gameManager.IsGameOver))
-            return;
-
-        PlayerMovement player = other.GetComponentInParent<PlayerMovement>();
-        if (player == null || !player.isActiveAndEnabled)
-            return;
-        fightingPlayer = player;
-        player.BeginGoombaFight(this);
-        enemyBody.linearVelocity = Vector2.zero;
-    }
-
-    private void ShooAway()
-    {
-        Vector2 playerPosition = fightingPlayer.GetComponent<Rigidbody2D>().position;
-        retreatDirection = (Position - playerPosition).normalized;
-        if (retreatDirection == Vector2.zero)
-            retreatDirection = Vector2.right;
-
-        // Drop near Mario for him to steal the trash
-        float dropRadius = 5f;
-        Vector2 dropPosition =
-            playerPosition + UnityEngine.Random.insideUnitCircle * dropRadius;
-        dropPosition.x = Mathf.Clamp(dropPosition.x, navigationBounds.xMin, navigationBounds.xMax);
-        dropPosition.y = Mathf.Clamp(dropPosition.y, navigationBounds.yMin, navigationBounds.yMax);
-        if (carriedTrash != null)
-            carriedTrash.Drop(this, dropPosition, droppedTrashProtection);
-        carriedTrash = null;
-        target = null;
-        path.Clear();
-        enemyBody.linearVelocity = Vector2.zero;
-        retreatUntil = Time.time + Mathf.Max(0f, retreatDuration);
-        nextPathTime = retreatUntil;
-        fightingPlayer.goombaShooed.Invoke();
-        EndFight();
-    }
-
-    private void EndFight()
-    {
-        if (fightingPlayer != null)
-            fightingPlayer.EndGoombaFight(this);
-        fightingPlayer = null;
-    }
+    // Navigation collision checks
+    public LayerMask obstacleLayers = ~0;
+    private Vector2 bodySize;
+    private Vector2 colliderOffset;
 
     private bool CanTravel(Vector2 from, Vector2 to)
     {
         if (!FitsInsideMap(from) || !FitsInsideMap(to))
             return false;
 
-        // Check Goomba's whole body so a route cannot cut through wall corners.
+        // Check Goomba's whole body so a route cannot cut through wall
         foreach (Collider2D hit in Physics2D.OverlapBoxAll(to + colliderOffset, bodySize, 0f, obstacleLayers))
         {
             if (IsObstacle(hit))
@@ -280,19 +318,144 @@ public class EnemyMovement : MonoBehaviour
             (collider.attachedRigidbody == null || collider.attachedRigidbody.bodyType == RigidbodyType2D.Static);
     }
 
-    private void OnDisable()
+    // Getting shoo'ed retreat when Space is pressed.
+    public KeyCode shooKey = KeyCode.Space;
+    [Min(0f)] public float retreatSpeed = 5f;
+    [Min(0f)] public float retreatDuration = 0.3f;
+    [Min(0f)] public float droppedTrashProtection = 4f;
+    private PlayerMovement fightingPlayer;
+    private Vector2 retreatDirection;
+    private float retreatUntil;
+
+    private void OnCollisionEnter2D(Collision2D collision)
     {
-        EndFight();
-        if (carriedTrash != null)
-            carriedTrash.Drop(this, Position, droppedTrashProtection);
-        carriedTrash = null;
-        if (enemyBody != null)
-            enemyBody.linearVelocity = Vector2.zero;
-        target = null;
-        path.Clear();
-        nextPathTime = 0f;
+        InteractWithPlayer(collision.collider);
     }
 
+    private void OnCollisionStay2D(Collision2D collision)
+    {
+        InteractWithPlayer(collision.collider);
+    }
+
+    private void OnCollisionExit2D(Collision2D collision)
+    {
+        // Release Mario's interaction lock when the Goomba moves away.
+        if (fightingPlayer != null &&
+            collision.collider.GetComponentInParent<PlayerMovement>() == fightingPlayer)
+            EndFight();
+    }
+
+    private void InteractWithPlayer(Collider2D other)
+    {
+        if (fightingPlayer != null || Time.time < retreatUntil || !other.CompareTag("Player") ||
+            (gameManager != null && gameManager.IsGameOver))
+            return;
+
+        PlayerMovement player = other.GetComponentInParent<PlayerMovement>();
+        if (player == null || !player.isActiveAndEnabled)
+            return;
+        fightingPlayer = player;
+        player.BeginGoombaFight(this);
+        //enemyBody.linearVelocity = Vector2.zero;
+    }
+
+    private void ShooAway()
+    {
+        Vector2 playerPosition = fightingPlayer.GetComponent<Rigidbody2D>().position;
+        retreatDirection = (Position - playerPosition).normalized;
+        if (retreatDirection == Vector2.zero)
+            retreatDirection = Vector2.right;
+
+        // Drop near Mario so he has a chance to steal the trash.
+        float dropRadius = 5f;
+        Vector2 dropPosition =
+            playerPosition + UnityEngine.Random.insideUnitCircle * dropRadius;
+        dropPosition.x = Mathf.Clamp(dropPosition.x, navigationBounds.xMin, navigationBounds.xMax);
+        dropPosition.y = Mathf.Clamp(dropPosition.y, navigationBounds.yMin, navigationBounds.yMax);
+        if (carriedTrash != null)
+            carriedTrash.Drop(this, dropPosition, droppedTrashProtection);
+        carriedTrash = null;
+        target = null;
+        path.Clear();
+        // enemyBody.linearVelocity = Vector2.zero;
+        retreatUntil = Time.time + Mathf.Max(0f, retreatDuration);
+        nextPathTime = retreatUntil;
+        fightingPlayer.goombaShooed.Invoke();
+        EndFight();
+
+        // Show feedback only after a successful shoo
+        if (alert != null)
+        {
+            alert.SetActive(true);
+            CancelInvoke(nameof(HideAlert));
+            Invoke(nameof(HideAlert), 1f);
+        }
+
+        if (goombaAnimator != null)
+            goombaAnimator.SetTrigger("onShoo");
+
+        if (visual != null)
+        {
+            if (hopRoutine != null)
+                StopCoroutine(hopRoutine);
+
+            hopRoutine = StartCoroutine(Hop());
+        }
+    }
+
+    private void EndFight()
+    {
+        if (fightingPlayer != null)
+            fightingPlayer.EndGoombaFight(this);
+        fightingPlayer = null;
+    }
+
+    // Walking animation, the shoo alert, and a hop of the visual child.
+    public Animator goombaAnimator;
+    private SpriteRenderer enemySprite;
+    public GameObject alert;
+    public Transform visual;
+    public float hopHeight = 0.6f;
+    public float hopDuration = 0.3f;
+    private Vector3 visualRestPosition;
+    private Coroutine hopRoutine;
+
+    private void LateUpdate()
+    {
+        // Use total speed 
+        if (goombaAnimator != null && enemyBody != null)
+            goombaAnimator.SetFloat("xSpeed", enemyBody.linearVelocity.magnitude);
+    }
+
+    private void HideAlert()
+    {
+        if (alert != null)
+            alert.SetActive(false);
+    }
+
+    private IEnumerator Hop()
+    {
+        float duration = Mathf.Max(0.01f, hopDuration);
+        float elapsed = 0f;
+
+        while (elapsed < duration)
+        {
+            float progress = elapsed / duration;
+            // A half sine wave lifts the visual and returns it to its resting height.
+            float height = Mathf.Sin(progress * Mathf.PI) * hopHeight;
+
+            visual.localPosition =
+                visualRestPosition + Vector3.up * height;
+
+            elapsed += Time.deltaTime;
+            yield return null;
+        }
+
+        visual.localPosition = visualRestPosition;
+        hopRoutine = null;
+    }
+
+    // Optional scene debugging; leave disabled during normal gameplay.
     // private void OnDrawGizmosSelected()
     // {
     //     Gizmos.color = Color.yellow;

@@ -63,8 +63,7 @@ public class GeneratorManager : MonoBehaviour
         {
             return;
         }
-        SpawnTrashCollector();
-        Debug.Log(collector.ToString());
+        RelocateTrashCollector();
     }
 
     // Spawn inside the 256 x 256 map with a random trash sprite.
@@ -83,7 +82,7 @@ public class GeneratorManager : MonoBehaviour
         GameObject newCoin = Instantiate(CoinPrefab, spawnPosition, Quaternion.identity);
     }
 
-    private void SpawnTrashCollector()
+    public void RelocateTrashCollector()
     {
         bool isVertical = Random.value > 0.5f;
         int rangeValue = Random.Range(-119, 119);
@@ -108,7 +107,21 @@ public class GeneratorManager : MonoBehaviour
             xCoordinate = rangeValue; yCoordinate = switchValue; zRotation = 180;
         }
         Vector3 spawnPosition = new Vector3(xCoordinate, yCoordinate, 0);
-        GameObject newTrashCollector = Instantiate(TrashCollectorPrefab, spawnPosition, Quaternion.Euler(0, 0, zRotation));
-        activeTrash.Add(newTrashCollector);
+        if (collector != null)
+        {
+            // Ensure a pickup always changes the position, even if the random choice repeats.
+            if (collector.transform.position == spawnPosition)
+            {
+                if (isVertical)
+                    spawnPosition.y += 1f;
+                else
+                    spawnPosition.x += 1f;
+            }
+            collector.transform.SetPositionAndRotation(spawnPosition, Quaternion.Euler(0, 0, zRotation));
+        }
+        else
+        {
+            collector = Instantiate(TrashCollectorPrefab, spawnPosition, Quaternion.Euler(0, 0, zRotation));
+        }
     }
 }

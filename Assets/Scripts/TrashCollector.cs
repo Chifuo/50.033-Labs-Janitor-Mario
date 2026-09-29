@@ -24,7 +24,6 @@ public class TrashCollector : MonoBehaviour
             return false;
 
         gameManager.RecordGoombaDelivery();
-        Destroy(gameObject);
         return true;
     }
 
