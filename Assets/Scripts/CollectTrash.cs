@@ -11,7 +11,7 @@ public class CollectTrash : MonoBehaviour
     private readonly HashSet<Collider2D> nearbyPlayers = new HashSet<Collider2D>();
     private Collider2D pickupCollider;
     private GameManager gameManager;
-    private EnemyMovement carrier;
+    private GoombaTrashCarrier carrier;
     private Transform groundParent;
     private bool isCarried;
     private bool consumed;
@@ -59,10 +59,10 @@ public class CollectTrash : MonoBehaviour
     private void LateUpdate()
     {
         if (isCarried && carrier != null)
-            transform.position = carrier.transform.position + new Vector3(0f, carrier.carryHeight, -0.1f);
+            transform.position = carrier.transform.position + new Vector3(0f, carrier.CarryHeight, -0.1f);
     }
 
-    public bool TryPickUp(EnemyMovement enemy)
+    public bool TryPickUp(GoombaTrashCarrier enemy)
     {
         if (enemy == null || !CanEnemyPickUp || (gameManager != null && gameManager.IsGameOver))
             return false;
@@ -80,7 +80,7 @@ public class CollectTrash : MonoBehaviour
         return true;
     }
 
-    public bool Drop(EnemyMovement enemy, Vector3 position, float protectionDuration)
+    public bool Drop(GoombaTrashCarrier enemy, Vector3 position, float protectionDuration)
     {
         if (!isCarried || carrier != enemy || consumed)
             return false;
@@ -96,7 +96,7 @@ public class CollectTrash : MonoBehaviour
         return true;
     }
 
-    public bool TryDeliver(EnemyMovement enemy)
+    public bool TryDeliver(GoombaTrashCarrier enemy)
     {
         if (!isCarried || carrier != enemy || consumed)
             return false;

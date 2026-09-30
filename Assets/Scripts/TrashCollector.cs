@@ -14,7 +14,7 @@ public class TrashCollector : MonoBehaviour
             gameManager = FindFirstObjectByType<GameManager>();
     }
 
-    public bool TryReceive(CollectTrash trash, EnemyMovement carrier)
+    public bool TryReceive(CollectTrash trash, GoombaTrashCarrier carrier)
     {
         if (gameManager == null || gameManager.IsGameOver || trash == null || carrier == null ||
             Vector2.Distance(carrier.Position, DropOffPosition) > deliveryRadius)

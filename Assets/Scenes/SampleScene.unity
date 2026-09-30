@@ -131,6 +131,10 @@ GameObject:
   - component: {fileID: 13455277}
   - component: {fileID: 13455276}
   - component: {fileID: 13455275}
+  - component: {fileID: 13455283}
+  - component: {fileID: 13455282}
+  - component: {fileID: 13455281}
+  - component: {fileID: 13455280}
   m_Layer: 0
   m_Name: Goomba
   m_TagString: Untagged
@@ -150,11 +154,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a70bb1c20cf5d4c208c89bce0cbf6b20, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyMovement
-  shooKey: 32
-  retreatSpeed: 60
-  retreatDuration: 0.3
-  carryHeight: 12
-  droppedTrashProtection: 4
+  avoidance: {fileID: 13455282}
+  shoo: {fileID: 13455283}
+  visuals: {fileID: 13455280}
+  trashCarrier: {fileID: 13455281}
   moveSpeed: 35
   stoppingDistance: 2
   repathInterval: 0.75
@@ -165,16 +168,10 @@ MonoBehaviour:
     y: -128
     width: 256
     height: 256
+  collector: {fileID: 0}
   obstacleLayers:
     serializedVersion: 2
     m_Bits: 4294967295
-  avoidanceLookAhead: 0.3
-  goombaAnimator: {fileID: 729775444}
-  collector: {fileID: 0}
-  alert: {fileID: 1659202099}
-  visual: {fileID: 729775443}
-  hopHeight: 0.6
-  hopDuration: 0.3
 --- !u!61 &13455276
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -265,6 +262,65 @@ Transform:
   - {fileID: 729775443}
   m_Father: {fileID: 724216538}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &13455280
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 13455273}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 91d64ebc63ca41f88d257449c7907309, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GoombaVisuals
+  goombaAnimator: {fileID: 0}
+  alert: {fileID: 0}
+  visual: {fileID: 0}
+  hopHeight: 0.6
+  hopDuration: 0.3
+--- !u!114 &13455281
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 13455273}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 00a76cb29020461781932f527e6eccf9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GoombaTrashCarrier
+  carryHeight: 12
+  droppedTrashProtection: 4
+--- !u!114 &13455282
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 13455273}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 02bf16ade06d4fd78751d8a16a527ad7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GoombaAvoidance
+  avoidanceLookAhead: 0.3
+--- !u!114 &13455283
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 13455273}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 633e66b3fdbc4527b50aebf48cea5269, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GoombaShoo
+  shooKey: 32
+  retreatSpeed: 5
+  retreatDuration: 0.3
 --- !u!1 &61589304
 GameObject:
   m_ObjectHideFlags: 0
@@ -2254,6 +2310,10 @@ GameObject:
   - component: {fileID: 982917224}
   - component: {fileID: 982917223}
   - component: {fileID: 982917222}
+  - component: {fileID: 982917228}
+  - component: {fileID: 982917227}
+  - component: {fileID: 982917226}
+  - component: {fileID: 982917225}
   m_Layer: 0
   m_Name: Goomba
   m_TagString: Untagged
@@ -2290,11 +2350,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a70bb1c20cf5d4c208c89bce0cbf6b20, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyMovement
-  shooKey: 32
-  retreatSpeed: 60
-  retreatDuration: 0.3
-  carryHeight: 12
-  droppedTrashProtection: 4
+  avoidance: {fileID: 982917228}
+  shoo: {fileID: 982917227}
+  visuals: {fileID: 982917225}
+  trashCarrier: {fileID: 982917226}
   moveSpeed: 35
   stoppingDistance: 2
   repathInterval: 0.75
@@ -2305,16 +2364,10 @@ MonoBehaviour:
     y: -128
     width: 256
     height: 256
+  collector: {fileID: 0}
   obstacleLayers:
     serializedVersion: 2
     m_Bits: 4294967295
-  avoidanceLookAhead: 0.3
-  goombaAnimator: {fileID: 1779899819}
-  collector: {fileID: 0}
-  alert: {fileID: 1748931231}
-  visual: {fileID: 1779899818}
-  hopHeight: 0.6
-  hopDuration: 0.3
 --- !u!61 &982917223
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -2388,6 +2441,65 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 1
   m_Constraints: 4
+--- !u!114 &982917225
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 982917220}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 91d64ebc63ca41f88d257449c7907309, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GoombaVisuals
+  goombaAnimator: {fileID: 0}
+  alert: {fileID: 0}
+  visual: {fileID: 0}
+  hopHeight: 0.6
+  hopDuration: 0.3
+--- !u!114 &982917226
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 982917220}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 00a76cb29020461781932f527e6eccf9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GoombaTrashCarrier
+  carryHeight: 12
+  droppedTrashProtection: 4
+--- !u!114 &982917227
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 982917220}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 633e66b3fdbc4527b50aebf48cea5269, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GoombaShoo
+  shooKey: 32
+  retreatSpeed: 5
+  retreatDuration: 0.3
+--- !u!114 &982917228
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 982917220}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 02bf16ade06d4fd78751d8a16a527ad7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GoombaAvoidance
+  avoidanceLookAhead: 0.3
 --- !u!1 &990316207
 GameObject:
   m_ObjectHideFlags: 0
@@ -2478,7 +2590,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 10, y: 10, z: 10}
+  m_LocalScale: {x: 15, y: 15, z: 10}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}

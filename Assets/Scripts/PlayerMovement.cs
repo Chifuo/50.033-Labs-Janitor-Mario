@@ -24,19 +24,20 @@ public class PlayerMovement : MonoBehaviour
     private bool isDying;
     private Vector2 movementInput;
     private GameManager gameManager;
-    private readonly HashSet<EnemyMovement> fightingGoombas = new HashSet<EnemyMovement>();
+    private readonly HashSet<GoombaShoo> fightingGoombas = new HashSet<GoombaShoo>();
     public bool IsFightingGoomba => fightingGoombas.Count > 0;
     // For now, its not so much of a fight, more like... press space to shoo it away. 
     // In the future perhaps we can introduce broom slashing?
-    public void BeginGoombaFight(EnemyMovement enemy)
+    public void BeginGoombaFight(GoombaShoo enemy)
     {
         fightingGoombas.Add(enemy);
-        isDashing = false;
-        cooldownRemaining = Mathf.Max(0f, dashCooldown);
-        marioBody.linearVelocity = Vector2.zero;
+        // Contact lets Mario shoo; physics handles the bump.
+        // isDashing = false;
+        // cooldownRemaining = Mathf.Max(0f, dashCooldown);
+        // marioBody.linearVelocity = Vector2.zero;
     }
 
-    public void EndGoombaFight(EnemyMovement enemy)
+    public void EndGoombaFight(GoombaShoo enemy)
     {
         fightingGoombas.Remove(enemy);
     }
@@ -86,7 +87,9 @@ public class PlayerMovement : MonoBehaviour
 
         marioAnimator.SetFloat("xSpeed", marioBody.linearVelocity.magnitude);
 
-        if (IsFightingGoomba || (gameManager != null && gameManager.IsGameOver))
+        // if (IsFightingGoomba)
+        //     return;
+        if (gameManager != null && gameManager.IsGameOver)
             return;
 
         movementInput = Vector2.ClampMagnitude(new Vector2(
@@ -137,12 +140,13 @@ public class PlayerMovement : MonoBehaviour
             return;
         }
 
-        if (IsFightingGoomba)
-        {
-            marioBody.linearVelocity = Vector2.zero;
-            marioBody.angularVelocity = 0f;
-            return;
-        }
+        // Old contact freeze. Keep moving so Mario can steer away or push the goombas physically.
+        // if (IsFightingGoomba)
+        // {
+        //     marioBody.linearVelocity = Vector2.zero;
+        //     marioBody.angularVelocity = 0f;
+        //     return;
+        // }
 
         if (isDashing)
         {
