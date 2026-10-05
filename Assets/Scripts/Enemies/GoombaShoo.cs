@@ -4,7 +4,6 @@ using UnityEngine;
 public class GoombaShoo : MonoBehaviour
 {
     // Space shoos a Goomba while Mario is touching it.
-    [SerializeField] private KeyCode shooKey = KeyCode.Space;
     [SerializeField, Min(0f)] private float retreatSpeed = 5f;
     [SerializeField, Min(0f)] private float retreatDuration = 0.3f;
     private PlayerMovement fightingPlayer;
@@ -23,7 +22,7 @@ public class GoombaShoo : MonoBehaviour
         trashCarrier = carrier;
     }
 
-    public void ProcessInput()
+    public void CheckContact()
     {
         if (fightingPlayer != null)
         {
@@ -32,10 +31,18 @@ public class GoombaShoo : MonoBehaviour
                 EndFight();
                 // return; // Old stop-on-contact behaviour.
             }
-            else if (Input.GetKeyDown(shooKey))
-                ShooAway();
             // return; // Old stop-on-contact behaviour.
         }
+    }
+
+    public void TryShoo(PlayerMovement player)
+    {
+        if (!isActiveAndEnabled || player == null || !player.isActiveAndEnabled ||
+            fightingPlayer != player || movement == null || !movement.isActiveAndEnabled ||
+            movement.IsGameOver || IsRetreating)
+            return;
+
+        ShooAway();
     }
 
     public Vector2 GetRetreatVelocity()
@@ -87,9 +94,10 @@ public class GoombaShoo : MonoBehaviour
         // GetComponent<Rigidbody2D>().linearVelocity = Vector2.zero;
         retreatUntil = Time.time + Mathf.Max(0f, retreatDuration);
         movement.ClearRoute(retreatUntil);
-        fightingPlayer.goombaShooed.Invoke();
+        PlayerMovement player = fightingPlayer;
         EndFight();
 
+        player.goombaShooed.Invoke();
         Shooed?.Invoke();
     }
 

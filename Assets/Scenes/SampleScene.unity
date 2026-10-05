@@ -318,7 +318,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 633e66b3fdbc4527b50aebf48cea5269, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GoombaShoo
-  shooKey: 32
   retreatSpeed: 5
   retreatDuration: 0.3
 --- !u!1 &61589304
@@ -781,7 +780,7 @@ AudioSource:
   m_GameObject: {fileID: 262262013}
   m_Enabled: 1
   serializedVersion: 4
-  OutputAudioMixerGroup: {fileID: 0}
+  OutputAudioMixerGroup: {fileID: 210441920896658309, guid: c18b6cfe995bb4d3fb7e845174622910, type: 2}
   m_audioClip: {fileID: 0}
   m_Resource: {fileID: 8300000, guid: 0b229b996fd1d4ada8e31997ba89dd65, type: 3}
   m_PlayOnAwake: 0
@@ -910,7 +909,7 @@ AudioSource:
   m_GameObject: {fileID: 321360267}
   m_Enabled: 1
   serializedVersion: 4
-  OutputAudioMixerGroup: {fileID: 0}
+  OutputAudioMixerGroup: {fileID: 210441920896658309, guid: c18b6cfe995bb4d3fb7e845174622910, type: 2}
   m_audioClip: {fileID: 0}
   m_Resource: {fileID: 8300000, guid: 03b9db3f6179a47babf90e0d1f84dfa8, type: 3}
   m_PlayOnAwake: 0
@@ -1039,7 +1038,7 @@ AudioSource:
   m_GameObject: {fileID: 350768456}
   m_Enabled: 1
   serializedVersion: 4
-  OutputAudioMixerGroup: {fileID: 0}
+  OutputAudioMixerGroup: {fileID: 210441920896658309, guid: c18b6cfe995bb4d3fb7e845174622910, type: 2}
   m_audioClip: {fileID: 0}
   m_Resource: {fileID: 8300000, guid: e0977e84cc50d4310986c7fac71f7dd0, type: 3}
   m_PlayOnAwake: 0
@@ -1620,7 +1619,7 @@ AudioSource:
   m_GameObject: {fileID: 670358628}
   m_Enabled: 1
   serializedVersion: 4
-  OutputAudioMixerGroup: {fileID: 0}
+  OutputAudioMixerGroup: {fileID: 950780965279949811, guid: c18b6cfe995bb4d3fb7e845174622910, type: 2}
   m_audioClip: {fileID: 0}
   m_Resource: {fileID: 8300000, guid: 3a2e657dffb9a4095bf515328321bf2b, type: 3}
   m_PlayOnAwake: 0
@@ -2484,7 +2483,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 633e66b3fdbc4527b50aebf48cea5269, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GoombaShoo
-  shooKey: 32
   retreatSpeed: 5
   retreatDuration: 0.3
 --- !u!114 &982917228
@@ -2514,6 +2512,8 @@ GameObject:
   - component: {fileID: 990316210}
   - component: {fileID: 990316212}
   - component: {fileID: 990316213}
+  - component: {fileID: 990316215}
+  - component: {fileID: 990316214}
   m_Layer: 0
   m_Name: Mario
   m_TagString: Player
@@ -2638,11 +2638,22 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+      - m_Target: {fileID: 61589305}
+        m_TargetAssemblyTypeName: GameManager, Assembly-CSharp
+        m_MethodName: IncreaseScore
+        m_Mode: 3
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 1
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   deathImpulse: 50
   deathGravityScale: 10
   speed: 100
   maxSpeed: 200
-  dashKey: 304
   dashSpeed: 500
   dashDuration: 0.15
   dashCooldown: 1
@@ -2741,6 +2752,145 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &990316214
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 990316207}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 557af10c81757498b935b22982ca7f69, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ActionManager
+  move:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 990316210}
+        m_TargetAssemblyTypeName: PlayerMovement, Assembly-CSharp
+        m_MethodName: Move
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  dash:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 990316210}
+        m_TargetAssemblyTypeName: PlayerMovement, Assembly-CSharp
+        m_MethodName: Dash
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  shoo:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 990316210}
+        m_TargetAssemblyTypeName: PlayerMovement, Assembly-CSharp
+        m_MethodName: Shoo
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+--- !u!114 &990316215
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 990316207}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 62899f850307741f2a39c98a8b639597, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.InputSystem::UnityEngine.InputSystem.PlayerInput
+  m_Actions: {fileID: -944628639613478452, guid: 32d90bf4c533a4c048bc29dbd0b16e1f, type: 3}
+  m_NotificationBehavior: 2
+  m_UIInputModule: {fileID: 0}
+  m_DeviceLostEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  m_DeviceRegainedEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  m_ControlsChangedEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  m_ActionEvents:
+  - m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 990316214}
+        m_TargetAssemblyTypeName: ActionManager, Assembly-CSharp
+        m_MethodName: OnMoveAction
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_ActionId: ba8033a5-455c-44cf-b16e-53894f96304e
+    m_ActionName: 'Gameplay/Move[/Keyboard/w,/Keyboard/s,/Keyboard/a,/Keyboard/d]'
+  - m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 990316214}
+        m_TargetAssemblyTypeName: ActionManager, Assembly-CSharp
+        m_MethodName: OnShooAction
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_ActionId: ea254b68-ccb7-4c60-b492-89319f7e1ad7
+    m_ActionName: 'Gameplay/Shoo[/Keyboard/space]'
+  - m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 990316214}
+        m_TargetAssemblyTypeName: ActionManager, Assembly-CSharp
+        m_MethodName: OnDashAction
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_ActionId: 7914e6cc-38ec-484b-be00-5679728336b4
+    m_ActionName: 'Gameplay/Dash[/Keyboard/leftShift]'
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: cce65064-8268-4a60-9252-ee1abed6494d
+    m_ActionName: New action map1/New action
+  m_NeverAutoSwitchControlSchemes: 0
+  m_DefaultControlScheme: 
+  m_DefaultActionMap: Gameplay
+  m_SplitScreenIndex: -1
+  m_Camera: {fileID: 0}
 --- !u!1 &1042259979
 GameObject:
   m_ObjectHideFlags: 0

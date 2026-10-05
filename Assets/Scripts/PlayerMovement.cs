@@ -10,7 +10,6 @@ public class PlayerMovement : MonoBehaviour
     public float deathGravityScale = 10f;
     public float speed = 100;
     public float maxSpeed = 200;
-    public KeyCode dashKey = KeyCode.LeftShift;
     [Min(0f)] public float dashSpeed = 400f;
     [Min(0.01f)] public float dashDuration = 0.15f;
     [Min(0f)] public float dashCooldown = 1f;
@@ -92,9 +91,6 @@ public class PlayerMovement : MonoBehaviour
         if (gameManager != null && gameManager.IsGameOver)
             return;
 
-        movementInput = Vector2.ClampMagnitude(new Vector2(
-            Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical")), 1f);
-
         if (movementInput.x < 0f && faceRightState)
         {
             if (marioBody.linearVelocity.x > 0.1f)
@@ -113,16 +109,37 @@ public class PlayerMovement : MonoBehaviour
             marioSprite.flipX = false;
         }
 
-        if (Input.GetKeyDown(dashKey) && !isDashing && cooldownRemaining <= 0f)
-        {
-            dashDirection = movementInput.normalized;
-            if (dashDirection == Vector2.zero)
-            {
-                dashDirection = faceRightState ? Vector2.right : Vector2.left;
-            }
+    }
 
-            dashTimeRemaining = Mathf.Max(0.01f, dashDuration);
-            isDashing = true;
+    public void Move(Vector2 value)
+    {
+        movementInput = Vector2.ClampMagnitude(value, 1f);
+    }
+
+    public void Dash()
+    {
+        if (!isActiveAndEnabled || isDying || (gameManager != null && gameManager.IsGameOver) ||
+            isDashing || cooldownRemaining > 0f)
+            return;
+
+        dashDirection = movementInput.normalized;
+        if (dashDirection == Vector2.zero)
+            dashDirection = faceRightState ? Vector2.right : Vector2.left;
+
+        dashTimeRemaining = Mathf.Max(0.01f, dashDuration);
+        isDashing = true;
+    }
+
+    public void Shoo()
+    {
+        if (!isActiveAndEnabled || isDying || (gameManager != null && gameManager.IsGameOver))
+            return;
+
+        // A successful shoo removes the Goomba from this set.
+        foreach (GoombaShoo enemy in new List<GoombaShoo>(fightingGoombas))
+        {
+            if (enemy != null)
+                enemy.TryShoo(this);
         }
     }
 

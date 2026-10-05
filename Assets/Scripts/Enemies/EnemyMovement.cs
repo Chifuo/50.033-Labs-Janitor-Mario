@@ -62,7 +62,7 @@ public class EnemyMovement : MonoBehaviour
             return;
         }
 
-        shoo.ProcessInput();
+        shoo.CheckContact();
         // Uncomment to stop planning while touching Mario.
         // if (shoo.IsInteracting)
         //     return;
