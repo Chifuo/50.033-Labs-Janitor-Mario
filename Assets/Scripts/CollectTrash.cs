@@ -10,7 +10,6 @@ public class CollectTrash : MonoBehaviour
     public bool CanEnemyPickUp => IsOnGround && Time.time >= enemyPickupAllowedAt;
     private readonly HashSet<Collider2D> nearbyPlayers = new HashSet<Collider2D>();
     private Collider2D pickupCollider;
-    private GameManager gameManager;
     private GoombaTrashCarrier carrier;
     private Transform groundParent;
     private bool isCarried;
@@ -21,7 +20,6 @@ public class CollectTrash : MonoBehaviour
     private void Awake()
     {
         pickupCollider = GetComponent<Collider2D>();
-        gameManager = FindFirstObjectByType<GameManager>();
         collectionTimer = collectionDuration;
     }
 
@@ -29,7 +27,7 @@ public class CollectTrash : MonoBehaviour
     {
         nearbyPlayers.RemoveWhere(player => player == null || !player.enabled || !player.gameObject.activeInHierarchy);
         CanPlayerCollect = IsOnGround && nearbyPlayers.Count > 0 &&
-            (gameManager == null || !gameManager.IsGameOver) && !PlayerIsFighting();
+            (GameManager.instance == null || !GameManager.instance.IsGameOver) && !PlayerIsFighting();
 
         if (!CanPlayerCollect || !Input.GetKey(KeyCode.F))
         {
@@ -38,10 +36,10 @@ public class CollectTrash : MonoBehaviour
         }
 
         collectionTimer = Mathf.Max(0f, collectionTimer - Time.deltaTime);
-        if (collectionTimer <= 0f && gameManager != null)
+        if (collectionTimer <= 0f && GameManager.instance != null)
         {
             Consume();
-            gameManager.IncreaseScore(1);
+            GameManager.instance.IncreaseScore(1);
         }
     }
 
@@ -64,7 +62,7 @@ public class CollectTrash : MonoBehaviour
 
     public bool TryPickUp(GoombaTrashCarrier enemy)
     {
-        if (enemy == null || !CanEnemyPickUp || (gameManager != null && gameManager.IsGameOver))
+        if (enemy == null || !CanEnemyPickUp || (GameManager.instance != null && GameManager.instance.IsGameOver))
             return false;
 
         carrier = enemy;

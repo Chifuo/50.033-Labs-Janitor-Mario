@@ -99,6 +99,7 @@ public class GoombaShoo : MonoBehaviour
 
         player.goombaShooed.Invoke();
         Shooed?.Invoke();
+        GameManager.instance.RecordGoombaShooed();
     }
 
     public void EndFight()

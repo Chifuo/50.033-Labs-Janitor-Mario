@@ -6,17 +6,16 @@ public class GeneratorManager : MonoBehaviour
     public GameObject TrashPrefab;
     public GameObject TrashCollectorPrefab;
     public GameObject CoinPrefab;
-    public GameObject collector;
+    private GameObject collector;
     public Sprite[] TrashSprites;
     [Min(5)] public int MinimumTrashCount = 5;
     [Min(0f)] private float CoinInterval = 30f;
     private float CoinIntervalCountdown;
     private readonly List<GameObject> activeTrash = new List<GameObject>();
-    private GameManager gameManager;
 
     private void Start()
     {
-        gameManager = FindFirstObjectByType<GameManager>();
+        activeTrash.RemoveAll(trash => trash == null);
         ReplenishTrash();
         MoveTrashCollector();
         CoinIntervalCountdown = CoinInterval;
@@ -25,7 +24,7 @@ public class GeneratorManager : MonoBehaviour
 
     private void Update()
     {
-        if (gameManager != null && gameManager.IsGameOver)
+        if (GameManager.instance != null && GameManager.instance.IsGameOver)
             return;
         activeTrash.RemoveAll(trash => trash == null);
         ReplenishTrash();

@@ -4,26 +4,23 @@ public class TrashCollector : MonoBehaviour
 {
     public Transform dropOffPoint;
     [Min(0.1f)] public float deliveryRadius = 3f;
-    private GameManager gameManager;
 
     public Vector2 DropOffPosition => dropOffPoint != null ? (Vector2)dropOffPoint.position : (Vector2)transform.position;
 
     private void Awake()
     {
-        if (gameManager == null)
-            gameManager = FindFirstObjectByType<GameManager>();
     }
 
     public bool TryReceive(CollectTrash trash, GoombaTrashCarrier carrier)
     {
-        if (gameManager == null || gameManager.IsGameOver || trash == null || carrier == null ||
+        if (GameManager.instance == null || GameManager.instance.IsGameOver || trash == null || carrier == null ||
             Vector2.Distance(carrier.Position, DropOffPosition) > deliveryRadius)
             return false;
 
         if (!trash.TryDeliver(carrier))
             return false;
 
-        gameManager.RecordGoombaDelivery();
+        GameManager.instance.RecordGoombaDelivery();
         return true;
     }
 

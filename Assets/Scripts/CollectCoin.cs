@@ -4,20 +4,18 @@ public class CollectCoin : MonoBehaviour
 {
     [Min(0f)] private float CoinLifespan = 10f;
     private float CoinCountdown;
-    private GameManager gameManager;
 
     private void Awake()
     {
-        gameManager = FindFirstObjectByType<GameManager>();
         CoinCountdown = CoinLifespan;
     }
     private void Update()
     {
-        if (gameManager != null && gameManager.IsGameOver)
+        if (GameManager.instance != null && GameManager.instance.IsGameOver)
         {
             return;
         }
-        if (gameManager != null && CoinCountdown <= 0f)
+        if (GameManager.instance != null && CoinCountdown <= 0f)
         {
             Destroy(gameObject);
         }
@@ -31,7 +29,7 @@ public class CollectCoin : MonoBehaviour
     private void OnTriggerEnter2D(Collider2D other)
     {
         Destroy(gameObject);
-        gameManager.IncreaseScore(10);
+        GameManager.instance.IncreaseScore(10);
     }
 
 }

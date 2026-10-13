@@ -12,7 +12,6 @@ public class EnemyMovement : MonoBehaviour
 
     private Rigidbody2D enemyBody;
     private BoxCollider2D enemyCollider;
-    private GameManager gameManager;
     private bool initialized;
 
     public Vector2 Position => enemyBody != null ? enemyBody.position : (Vector2)transform.position;
@@ -20,7 +19,7 @@ public class EnemyMovement : MonoBehaviour
     public Vector2 BodySize => bodySize;
     public Vector2 ColliderOffset => colliderOffset;
     public BoxCollider2D BodyCollider => enemyCollider;
-    public bool IsGameOver => gameManager != null && gameManager.IsGameOver;
+    public bool IsGameOver => GameManager.instance != null && GameManager.instance.IsGameOver;
     public bool IsCarryingTrash => trashCarrier != null && trashCarrier.IsCarryingTrash;
     public bool HasActiveRoute => initialized && isActiveAndEnabled && moveSpeed > 0f &&
         collector != null && waypointIndex < path.Count &&
@@ -30,7 +29,6 @@ public class EnemyMovement : MonoBehaviour
     {
         enemyBody = GetComponent<Rigidbody2D>();
         enemyCollider = GetComponent<BoxCollider2D>();
-        gameManager = FindFirstObjectByType<GameManager>();
 
         if (avoidance == null || shoo == null || visuals == null || trashCarrier == null)
         {

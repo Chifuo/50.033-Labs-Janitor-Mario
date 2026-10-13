@@ -22,7 +22,6 @@ public class PlayerMovement : MonoBehaviour
     private bool isDashing;
     private bool isDying;
     private Vector2 movementInput;
-    private GameManager gameManager;
     private readonly HashSet<GoombaShoo> fightingGoombas = new HashSet<GoombaShoo>();
     public bool IsFightingGoomba => fightingGoombas.Count > 0;
     // For now, its not so much of a fight, more like... press space to shoo it away. 
@@ -69,15 +68,16 @@ public class PlayerMovement : MonoBehaviour
         if (!isDying)
             return;
 
-        Time.timeScale = 0f;
         deathFinished.Invoke();
     }
 
     private void Start()
     {
+        isDying = false;
         marioSprite = GetComponent<SpriteRenderer>();
         marioBody = GetComponent<Rigidbody2D>();
-        gameManager = FindFirstObjectByType<GameManager>();
+        GameManager.instance.gameOver.AddListener(BeginDeath);
+
     }
     private void Update()
     {
@@ -88,7 +88,7 @@ public class PlayerMovement : MonoBehaviour
 
         // if (IsFightingGoomba)
         //     return;
-        if (gameManager != null && gameManager.IsGameOver)
+        if (GameManager.instance != null && GameManager.instance.IsGameOver)
             return;
 
         if (movementInput.x < 0f && faceRightState)
@@ -118,7 +118,7 @@ public class PlayerMovement : MonoBehaviour
 
     public void Dash()
     {
-        if (!isActiveAndEnabled || isDying || (gameManager != null && gameManager.IsGameOver) ||
+        if (!isActiveAndEnabled || isDying || (GameManager.instance != null && GameManager.instance.IsGameOver) ||
             isDashing || cooldownRemaining > 0f)
             return;
 
@@ -132,7 +132,7 @@ public class PlayerMovement : MonoBehaviour
 
     public void Shoo()
     {
-        if (!isActiveAndEnabled || isDying || (gameManager != null && gameManager.IsGameOver))
+        if (!isActiveAndEnabled || isDying || (GameManager.instance != null && GameManager.instance.IsGameOver))
             return;
 
         // A successful shoo removes the Goomba from this set.
@@ -148,7 +148,7 @@ public class PlayerMovement : MonoBehaviour
         if (isDying)
             return;
 
-        if (gameManager != null && gameManager.IsGameOver)
+        if (GameManager.instance != null && GameManager.instance.IsGameOver)
         {
             marioBody.linearVelocity = Vector2.zero;
             marioBody.angularVelocity = 0f;
