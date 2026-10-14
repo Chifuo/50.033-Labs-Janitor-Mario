@@ -19,6 +19,10 @@ public class ButtonManager : MonoBehaviour
     {
         GameManager.instance.GameReturnHome();
     }
+    public void ResetHighScoreButtonClick()
+    {
+        GameManager.instance.ResetHighScore();
+    }
     public void MenuButtonClick()
     {
         Time.timeScale = 0f;

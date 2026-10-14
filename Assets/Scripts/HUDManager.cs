@@ -10,6 +10,7 @@ public class HUDManager : MonoBehaviour
     private TMP_Text scoreLabel;
     private TMP_Text deliveriesLabel;
     private TMP_Text finalscoreLabel;
+    private GameManager manager;
 
     private void Awake()
     {
@@ -19,12 +20,25 @@ public class HUDManager : MonoBehaviour
             deliveriesLabel = deliveriesText.GetComponent<TMP_Text>();
         if (finalscoreText  != null)
             finalscoreLabel = finalscoreText.GetComponent<TMP_Text>();
-        SetScore(GameManager.instance.Score);
-        SetDeliveries(GameManager.instance.GoombaDeliveries);
+    }
 
-        GameManager.instance.scoreChange.AddListener(SetScore);
-        GameManager.instance.deliveryCountChange.AddListener(SetDeliveries);
-        GameManager.instance.gameOver.AddListener(SetFinalScore);
+    private void Start()
+    {
+        manager = GameManager.instance;
+        manager.scoreChange.AddListener(SetScore);
+        manager.deliveryCountChange.AddListener(SetDeliveries);
+        manager.gameOver.AddListener(SetFinalScore);
+        SetScore(manager.Score);
+        SetDeliveries(manager.GoombaDeliveries);
+    }
+
+    private void OnDestroy()
+    {
+        if (manager == null)
+            return;
+        manager.scoreChange.RemoveListener(SetScore);
+        manager.deliveryCountChange.RemoveListener(SetDeliveries);
+        manager.gameOver.RemoveListener(SetFinalScore);
     }
 
     public void SetScore(int score)

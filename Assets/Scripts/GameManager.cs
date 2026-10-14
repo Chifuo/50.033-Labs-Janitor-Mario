@@ -22,7 +22,9 @@ public class GameManager : MonoBehaviour
     public int GoombaDeliveries { get; private set; }
     public int GoombaShooedNumber { get; private set; }
 
-    public int Score { get; private set; }
+    [SerializeField] private IntVariable gameScore;
+    public int Score => gameScore.Value;
+    public int HighScore => gameScore.PreviousHighestValue;
     public float PlayerSpeed { get; private set; }
     public float PlayerMaxSpeed { get; private set; }
     public float PlayerDashSpeed { get; private set; }
@@ -38,7 +40,7 @@ public class GameManager : MonoBehaviour
 
     private static void InitialState()
     {
-        instance.Score = 0;
+        instance.gameScore.Value = 0;
         instance.GoombaDeliveries = 0;
         instance.IsGameOver = false;
         instance.PlayerIsSpedup = false;
@@ -79,11 +81,15 @@ public class GameManager : MonoBehaviour
     }
     public void GameRestart()
     {
-        SceneManager.LoadSceneAsync(SceneManager.GetActiveScene().buildIndex);
         InitialState();
+        SetScore(Score);
+        SceneManager.LoadSceneAsync(SceneManager.GetActiveScene().buildIndex);
     }
     public void GameNextScene()
     {
+        // Leaving the menu starts a new run; changing stages keeps the score.
+        if (SceneManager.GetActiveScene().name == "MainMenu")
+            InitialState();
         SceneManager.LoadSceneAsync(SceneManager.GetActiveScene().buildIndex + 1);
     }
     public void GameReturnHome()
@@ -94,13 +100,18 @@ public class GameManager : MonoBehaviour
     {
         if (IsGameOver)
             return;
-        Score += increment;
+        gameScore.ApplyChange(increment);
         SetScore(Score);
         scoreIncreased.Invoke();
     }
     public void SetScore(int score)
     {
         scoreChange.Invoke(score);
+    }
+
+    public void ResetHighScore()
+    {
+        gameScore.ResetHighestValue();
     }
     public void GameOver()
     {
