@@ -8,19 +8,22 @@ public class PlayerMovement : MonoBehaviour
     public UnityEvent goombaShooed = new UnityEvent();
     public float deathImpulse = 50f;
     public float deathGravityScale = 10f;
-    public float speed = 100;
-    public float maxSpeed = 200;
-    [Min(0f)] public float dashSpeed = 400f;
-    [Min(0.01f)] public float dashDuration = 0.15f;
-    [Min(0f)] public float dashCooldown = 1f;
+    public float speed;
+    public float maxSpeed;
+    [Min(0f)] public float dashSpeed;
+    [Min(0.01f)] private float dashDuration = 0.15f;
+    [Min(0f)] private float dashCooldown = 1f;
+    private float speedupTime = 5f;
     private Rigidbody2D marioBody;
     private SpriteRenderer marioSprite;
     private bool faceRightState = true;
     private Vector2 dashDirection;
     private float dashTimeRemaining;
     private float cooldownRemaining;
+    private float speedupTimeRemaining;
     private bool isDashing;
     private bool isDying;
+    public bool isSpedup;
     private Vector2 movementInput;
     private readonly HashSet<GoombaShoo> fightingGoombas = new HashSet<GoombaShoo>();
     public bool IsFightingGoomba => fightingGoombas.Count > 0;
@@ -70,6 +73,22 @@ public class PlayerMovement : MonoBehaviour
 
         deathFinished.Invoke();
     }
+    private void GetNormalSpeed()
+    {
+        isSpedup = GameManager.instance.PlayerIsSpedup;
+        speed = GameManager.instance.PlayerSpeed;
+        maxSpeed = GameManager.instance.PlayerMaxSpeed;
+        dashSpeed = GameManager.instance.PlayerDashSpeed;
+        speedupTimeRemaining = speedupTime;
+    }
+
+    private void GetSpedupSpeed()
+    {
+        isSpedup = GameManager.instance.PlayerIsSpedup;
+        speed = GameManager.instance.PlayerSpeed;
+        maxSpeed = GameManager.instance.PlayerMaxSpeed;
+        dashSpeed = GameManager.instance.PlayerDashSpeed;
+    }
 
     private void Start()
     {
@@ -77,6 +96,9 @@ public class PlayerMovement : MonoBehaviour
         marioSprite = GetComponent<SpriteRenderer>();
         marioBody = GetComponent<Rigidbody2D>();
         GameManager.instance.gameOver.AddListener(BeginDeath);
+        GameManager.instance.playerEndSpedup.AddListener(GetNormalSpeed);
+        GameManager.instance.playerSpedup.AddListener(GetSpedupSpeed);
+        GetNormalSpeed();
 
     }
     private void Update()
@@ -142,6 +164,11 @@ public class PlayerMovement : MonoBehaviour
                 enemy.TryShoo(this);
         }
     }
+    private void Decay()
+    {
+        speedupTimeRemaining = Mathf.Max(0f, speedupTimeRemaining - Time.deltaTime);
+    }
+
 
     private void FixedUpdate()
     {
@@ -164,6 +191,22 @@ public class PlayerMovement : MonoBehaviour
         //     marioBody.angularVelocity = 0f;
         //     return;
         // }
+
+        Debug.Log(isSpedup);
+        Debug.Log(speedupTimeRemaining);
+
+        if (isSpedup)
+        {
+            if (speedupTimeRemaining > 0f)
+            {
+                Decay();
+                //return;
+            }
+            else
+            {
+                GameManager.instance.RecordPlayerEndSpeedup();
+            }
+        }
 
         if (isDashing)
         {

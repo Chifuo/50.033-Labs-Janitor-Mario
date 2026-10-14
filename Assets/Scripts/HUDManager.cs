@@ -1,6 +1,5 @@
 using TMPro;
 using UnityEngine;
-using UnityEngine.Events;
 
 public class HUDManager : MonoBehaviour
 {
@@ -20,7 +19,7 @@ public class HUDManager : MonoBehaviour
             deliveriesLabel = deliveriesText.GetComponent<TMP_Text>();
         if (finalscoreText  != null)
             finalscoreLabel = finalscoreText.GetComponent<TMP_Text>();
-        SetScore(GameManager.instance.score);
+        SetScore(GameManager.instance.Score);
         SetDeliveries(GameManager.instance.GoombaDeliveries);
 
         GameManager.instance.scoreChange.AddListener(SetScore);
@@ -37,7 +36,7 @@ public class HUDManager : MonoBehaviour
     public void SetFinalScore()
     {
         if(finalscoreLabel != null)
-            finalscoreLabel.text = $"Score: {GameManager.instance.score}";
+            finalscoreLabel.text = $"Score: {GameManager.instance.Score}";
     }
 
     public void SetDeliveries(int count)

@@ -1,9 +1,6 @@
-using System;
-using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.SceneManagement;
-using UnityEngine.SocialPlatforms.Impl;
 
 public class GameManager : MonoBehaviour
 {
@@ -17,13 +14,21 @@ public class GameManager : MonoBehaviour
     public UnityEvent<int> deliveryCountChange = new UnityEvent<int>();
     public UnityEvent goombaDeliveredTrash = new UnityEvent();
     public UnityEvent goombaShooed = new UnityEvent();
-    [Min(1)] public int deliveriesToLose = 3;
+    public UnityEvent playerSpedup = new UnityEvent();
+    public UnityEvent playerEndSpedup = new UnityEvent();
+    [Min(1)] private int deliveriesToLose = 3;
 
     public bool IsGameOver { get; private set; }
     public int GoombaDeliveries { get; private set; }
     public int GoombaShooedNumber { get; private set; }
 
-    public int score { get; private set; }
+    public int Score { get; private set; }
+    public float PlayerSpeed { get; private set; }
+    public float PlayerMaxSpeed { get; private set; }
+    public float PlayerDashSpeed { get; private set; }
+    public bool PlayerIsSpedup {  get; private set; }
+    //private float SpeedupTime = 5f;
+    //private float SpeedupTimeRemaining;
     private static GameManager _instance;
 
     public static GameManager instance
@@ -33,10 +38,24 @@ public class GameManager : MonoBehaviour
 
     private static void InitialState()
     {
-        instance.score = 0;
+        instance.Score = 0;
         instance.GoombaDeliveries = 0;
         instance.IsGameOver = false;
+        instance.PlayerIsSpedup = false;
         Time.timeScale = 1f;
+    }
+
+    private static void PlayerNormalSpeed()
+    {
+        instance.PlayerSpeed = 100;
+        instance.PlayerMaxSpeed = 200;
+        instance.PlayerDashSpeed = 400f;
+    }
+    private static void PlayerSpedupSpeed()
+    {
+        instance.PlayerSpeed = 200;
+        instance.PlayerMaxSpeed = 400;
+        instance.PlayerDashSpeed = 400f;
     }
     private void Awake()
     {
@@ -54,8 +73,9 @@ public class GameManager : MonoBehaviour
     {
         InitialState();
         gameStart.Invoke();
-        SetScore(score);
+        SetScore(Score);
         deliveryCountChange.Invoke(GoombaDeliveries);
+        PlayerNormalSpeed();
     }
     public void GameRestart()
     {
@@ -74,8 +94,8 @@ public class GameManager : MonoBehaviour
     {
         if (IsGameOver)
             return;
-        score += increment;
-        SetScore(score);
+        Score += increment;
+        SetScore(Score);
         scoreIncreased.Invoke();
     }
     public void SetScore(int score)
@@ -107,5 +127,22 @@ public class GameManager : MonoBehaviour
         if (IsGameOver) return;
         GoombaShooedNumber++;
         goombaShooed.Invoke();
+    }
+
+    public void RecordPlayerSpedup()
+    {
+        if (IsGameOver) return;
+        PlayerIsSpedup = true;
+        PlayerSpedupSpeed();
+        playerSpedup.Invoke();
+    }
+
+    public void RecordPlayerEndSpeedup()
+    {
+        if (IsGameOver) return;
+        PlayerIsSpedup = false;
+        PlayerNormalSpeed();
+        playerEndSpedup.Invoke();
+
     }
 }

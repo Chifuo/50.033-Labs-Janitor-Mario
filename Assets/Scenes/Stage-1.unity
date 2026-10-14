@@ -135,7 +135,7 @@ GameObject:
   - component: {fileID: 13455282}
   - component: {fileID: 13455281}
   - component: {fileID: 13455280}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Goomba
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -379,7 +379,9 @@ MonoBehaviour:
   goombaShooed:
     m_PersistentCalls:
       m_Calls: []
-  deliveriesToLose: 3
+  playerSpedup:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!4 &61589306
 Transform:
   m_ObjectHideFlags: 0
@@ -938,7 +940,7 @@ GameObject:
   - component: {fileID: 124419033}
   - component: {fileID: 124419035}
   - component: {fileID: 124419034}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Alert (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1780,7 +1782,7 @@ GameObject:
   - component: {fileID: 564458661}
   - component: {fileID: 564458663}
   - component: {fileID: 564458662}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Alert (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2207,7 +2209,7 @@ GameObject:
   - component: {fileID: 729775443}
   - component: {fileID: 729775445}
   - component: {fileID: 729775444}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Visual
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2321,7 +2323,7 @@ GameObject:
   - component: {fileID: 768918305}
   - component: {fileID: 768918307}
   - component: {fileID: 768918306}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Alert
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2748,6 +2750,7 @@ GameObject:
   m_Component:
   - component: {fileID: 907051062}
   - component: {fileID: 907051061}
+  - component: {fileID: 907051063}
   m_Layer: 0
   m_Name: AudioManager
   m_TagString: Untagged
@@ -2786,6 +2789,28 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!95 &907051063
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 907051060}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 0}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!1 &982917220
 GameObject:
   m_ObjectHideFlags: 0
@@ -2802,7 +2827,7 @@ GameObject:
   - component: {fileID: 982917227}
   - component: {fileID: 982917226}
   - component: {fileID: 982917225}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Goomba
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3003,7 +3028,7 @@ GameObject:
   - component: {fileID: 990316213}
   - component: {fileID: 990316215}
   - component: {fileID: 990316214}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Mario
   m_TagString: Player
   m_Icon: {fileID: 0}
@@ -3146,6 +3171,7 @@ MonoBehaviour:
   dashSpeed: 500
   dashDuration: 0.15
   dashCooldown: 1
+  isSpedup: 0
 --- !u!50 &990316211
 Rigidbody2D:
   serializedVersion: 5
@@ -4853,7 +4879,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1659202100}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Alert
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4886,7 +4912,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1748931232}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Alert
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4942,6 +4968,7 @@ MonoBehaviour:
   TrashPrefab: {fileID: 1373085812252431535, guid: 33ae12c4e5052a14e8997d60660fa7d0, type: 3}
   TrashCollectorPrefab: {fileID: 4697395409969136, guid: 01ee055d9dfaf74419301311fa584f68, type: 3}
   CoinPrefab: {fileID: 5432705830848566054, guid: 0b0404c36890f3a46a952587e4889428, type: 3}
+  SpeedUpPrefab: {fileID: 8907420441301699207, guid: 7ed4a0230137665499bc94306333ca66, type: 3}
   TrashSprites:
   - {fileID: 21300042, guid: 82bc45c4496284f4c823d1b837f65ec4, type: 3}
   - {fileID: 21300066, guid: 82bc45c4496284f4c823d1b837f65ec4, type: 3}
@@ -4973,7 +5000,7 @@ GameObject:
   - component: {fileID: 1779899818}
   - component: {fileID: 1779899820}
   - component: {fileID: 1779899819}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Visual
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -5781,7 +5808,7 @@ GameObject:
   - component: {fileID: 2064778749}
   - component: {fileID: 2064778751}
   - component: {fileID: 2064778750}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Alert
   m_TagString: Untagged
   m_Icon: {fileID: 0}

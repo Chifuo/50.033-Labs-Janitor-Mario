@@ -6,11 +6,12 @@ public class GeneratorManager : MonoBehaviour
     public GameObject TrashPrefab;
     public GameObject TrashCollectorPrefab;
     public GameObject CoinPrefab;
+    public GameObject SpeedUpPrefab;
     private GameObject collector;
     public Sprite[] TrashSprites;
     [Min(5)] public int MinimumTrashCount = 5;
-    [Min(0f)] private float CoinInterval = 30f;
-    private float CoinIntervalCountdown;
+    [Min(0f)] private float PowerupInterval = 5f;
+    private float PowerupIntervalCountdown;
     private readonly List<GameObject> activeTrash = new List<GameObject>();
 
     private void Start()
@@ -18,8 +19,8 @@ public class GeneratorManager : MonoBehaviour
         activeTrash.RemoveAll(trash => trash == null);
         ReplenishTrash();
         MoveTrashCollector();
-        CoinIntervalCountdown = CoinInterval;
-        ReplenishCoin();
+        PowerupIntervalCountdown = PowerupInterval;
+        ReplenishPowerup();
     }
 
     private void Update()
@@ -29,7 +30,7 @@ public class GeneratorManager : MonoBehaviour
         activeTrash.RemoveAll(trash => trash == null);
         ReplenishTrash();
         MoveTrashCollector();
-        ReplenishCoin();
+        ReplenishPowerup();
     }
 
     private void ReplenishTrash()
@@ -46,13 +47,13 @@ public class GeneratorManager : MonoBehaviour
             groundCount++;
         }
     }
-    private void ReplenishCoin()
+    private void ReplenishPowerup()
     {
-        CoinIntervalCountdown = Mathf.Max(0f, CoinIntervalCountdown - Time.deltaTime);
-        if (CoinIntervalCountdown <= 0f)
+        PowerupIntervalCountdown = Mathf.Max(0f, PowerupIntervalCountdown - Time.deltaTime);
+        if (PowerupIntervalCountdown <= 0f)
         {
-            SpawnCoin();
-            CoinIntervalCountdown = CoinInterval;
+            SpawnPowerup();
+            PowerupIntervalCountdown = PowerupInterval;
         }
     }
     private void MoveTrashCollector()
@@ -75,10 +76,21 @@ public class GeneratorManager : MonoBehaviour
         newTrash.transform.Find("trash").GetComponentInChildren<SpriteRenderer>().sprite = sprite;
     }
 
-    private void SpawnCoin()
+    private void SpawnPowerup()
     {
-        Vector3 spawnPosition = new Vector3(Random.Range(-128, 128), Random.Range(-128, 128), 0);
-        GameObject newCoin = Instantiate(CoinPrefab, spawnPosition, Quaternion.identity);
+        // Currently either spawn coin or speedup powerup
+        if (Random.value > 0.5f)
+        {
+            Vector3 spawnPosition = new Vector3(Random.Range(-128, 128), Random.Range(-128, 128), 0);
+            GameObject newCoin = Instantiate(CoinPrefab, spawnPosition, Quaternion.identity);
+
+        }
+        else
+        {
+            Vector3 spawnPositionPU = new Vector3(Random.Range(-128, 128), Random.Range(-128, 128), 0);
+            GameObject newSpeedUP = Instantiate(SpeedUpPrefab, spawnPositionPU, Quaternion.identity);
+        }
+        
     }
 
     public void RelocateTrashCollector()
