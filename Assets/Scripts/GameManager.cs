@@ -89,7 +89,11 @@ public class GameManager : MonoBehaviour
     {
         // Leaving the menu starts a new run; changing stages keeps the score.
         if (SceneManager.GetActiveScene().name == "MainMenu")
+        {
             InitialState();
+            SceneManager.LoadSceneAsync("LoadingScene");
+            return;
+        }
         SceneManager.LoadSceneAsync(SceneManager.GetActiveScene().buildIndex + 1);
     }
     public void GameReturnHome()
