@@ -2,6 +2,8 @@ using UnityEngine;
 
 public class AudioManager : MonoBehaviour 
 {
+    [SerializeField] private AudioSource backgroundMusic;
+    [SerializeField] private AudioSource speedupSound;
     public GameObject GameoverSound;
     public GameObject PointIncreaseSound;
     public GameObject DeliveryIncreaseSound;
@@ -10,6 +12,7 @@ public class AudioManager : MonoBehaviour
     private AudioSource playerPickupTrash;
     private AudioSource goombaPickupTrash;
     private AudioSource goombaGetShooed;
+    private GameManager manager;
     private void Start()
     {
         goodbyeJojo = GameoverSound.GetComponent<AudioSource>();
@@ -17,14 +20,29 @@ public class AudioManager : MonoBehaviour
         goombaPickupTrash = DeliveryIncreaseSound.GetComponent<AudioSource>();
         goombaGetShooed = GoombaShooedSound.GetComponent<AudioSource>();
 
-        GameManager.instance.gameOver.AddListener(PlayGameoverSound);
-        GameManager.instance.scoreIncreased.AddListener(PlayPointIncreaseSound);
-        GameManager.instance.goombaDeliveredTrash.AddListener(PlayDeliverIncreaseSound);
-        GameManager.instance.goombaShooed.AddListener(PlayGoombaShooedSound);
+        manager = GameManager.instance;
+        manager.gameOver.AddListener(PlayGameoverSound);
+        manager.scoreIncreased.AddListener(PlayPointIncreaseSound);
+        manager.goombaDeliveredTrash.AddListener(PlayDeliverIncreaseSound);
+        manager.goombaShooed.AddListener(PlayGoombaShooedSound);
+        manager.playerSpedup.AddListener(PlaySpeedupSound);
+    }
+
+    private void OnDestroy()
+    {
+        if (manager == null)
+            return;
+        manager.gameOver.RemoveListener(PlayGameoverSound);
+        manager.scoreIncreased.RemoveListener(PlayPointIncreaseSound);
+        manager.goombaDeliveredTrash.RemoveListener(PlayDeliverIncreaseSound);
+        manager.goombaShooed.RemoveListener(PlayGoombaShooedSound);
+        manager.playerSpedup.RemoveListener(PlaySpeedupSound);
     }
 
     public void PlayGameoverSound()
     {
+        if (backgroundMusic != null)
+            backgroundMusic.Stop();
         goodbyeJojo.Play();
     }
     public void PlayPointIncreaseSound()
@@ -38,5 +56,11 @@ public class AudioManager : MonoBehaviour
     public void PlayGoombaShooedSound()
     {
         goombaGetShooed.Play();
+    }
+
+    private void PlaySpeedupSound()
+    {
+        if (speedupSound != null)
+            speedupSound.Play();
     }
 }

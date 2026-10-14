@@ -126,7 +126,9 @@ public class EnemyMovement : MonoBehaviour
 
         avoidance.ResetAvoidance();
         shoo.ResetState();
-        trashCarrier.DropAt(Position);
+        // Scene unload destroys carried trash too, sowe shouldn't  reparent it during teardown.
+        // if (gameObject.activeInHierarchy)
+        //     trashCarrier.DropAt(Position);
         visuals.ResetFeedback();
         ClearRoute();
     }

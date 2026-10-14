@@ -42,8 +42,10 @@ public class GameManager : MonoBehaviour
     {
         instance.gameScore.Value = 0;
         instance.GoombaDeliveries = 0;
+        instance.GoombaShooedNumber = 0;
         instance.IsGameOver = false;
         instance.PlayerIsSpedup = false;
+        PlayerNormalSpeed();
         Time.timeScale = 1f;
     }
 
@@ -69,21 +71,25 @@ public class GameManager : MonoBehaviour
         }
         // otherwise this is the first time this instance is created
         _instance = this;
+        InitialState();
         DontDestroyOnLoad(this.gameObject);
     }
     private void Start()
     {
-        InitialState();
         gameStart.Invoke();
         SetScore(Score);
         deliveryCountChange.Invoke(GoombaDeliveries);
-        PlayerNormalSpeed();
+    }
+    private void OnDestroy()
+    {
+        if (_instance == this)
+            _instance = null;
     }
     public void GameRestart()
     {
         InitialState();
         SetScore(Score);
-        SceneManager.LoadSceneAsync(SceneManager.GetActiveScene().buildIndex);
+        SceneManager.LoadSceneAsync("Stage-1");
     }
     public void GameNextScene()
     {
@@ -98,6 +104,7 @@ public class GameManager : MonoBehaviour
     }
     public void GameReturnHome()
     {
+        Time.timeScale = 1f;
         SceneManager.LoadSceneAsync("MainMenu");
     }
     public void IncreaseScore(int increment)

@@ -4,7 +4,7 @@ using UnityEngine.SceneManagement;
 
 public class LoadingScene : MonoBehaviour
 {
-    [SerializeField] private float delay = 3f;
+    [SerializeField] private float delay = 1f;
     private Coroutine loading;
     private bool leaving;
 

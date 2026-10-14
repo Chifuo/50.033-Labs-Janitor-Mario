@@ -25,6 +25,7 @@ public class PlayerMovement : MonoBehaviour
     private bool isDying;
     public bool isSpedup;
     private Vector2 movementInput;
+    private GameManager manager;
     private readonly HashSet<GoombaShoo> fightingGoombas = new HashSet<GoombaShoo>();
     public bool IsFightingGoomba => fightingGoombas.Count > 0;
     // For now, its not so much of a fight, more like... press space to shoo it away. 
@@ -51,7 +52,9 @@ public class PlayerMovement : MonoBehaviour
         isDying = true;
         isDashing = false;
         marioBody.linearVelocity = Vector2.zero;
-        GetComponent<Collider2D>().enabled = false;
+        // GetComponent<Collider2D>().enabled = false;
+        foreach (Collider2D collider in GetComponentsInChildren<Collider2D>(true))
+            collider.enabled = false;
         marioAnimator.ResetTrigger("onSkid");
         marioAnimator.Play("mario-die", 0, 0f);
     }
@@ -95,11 +98,20 @@ public class PlayerMovement : MonoBehaviour
         isDying = false;
         marioSprite = GetComponent<SpriteRenderer>();
         marioBody = GetComponent<Rigidbody2D>();
-        GameManager.instance.gameOver.AddListener(BeginDeath);
-        GameManager.instance.playerEndSpedup.AddListener(GetNormalSpeed);
-        GameManager.instance.playerSpedup.AddListener(GetSpedupSpeed);
+        manager = GameManager.instance;
+        manager.gameOver.AddListener(BeginDeath);
+        manager.playerEndSpedup.AddListener(GetNormalSpeed);
+        manager.playerSpedup.AddListener(GetSpedupSpeed);
         GetNormalSpeed();
 
+    }
+    private void OnDestroy()
+    {
+        if (manager == null)
+            return;
+        manager.gameOver.RemoveListener(BeginDeath);
+        manager.playerEndSpedup.RemoveListener(GetNormalSpeed);
+        manager.playerSpedup.RemoveListener(GetSpedupSpeed);
     }
     private void Update()
     {

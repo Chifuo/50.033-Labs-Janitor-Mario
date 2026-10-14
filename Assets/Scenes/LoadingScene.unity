@@ -343,7 +343,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3ac16c96527c3438085ae9dec481ca2e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LoadingScene
-  delay: 3
+  delay: 1
 --- !u!4 &1014131364
 Transform:
   m_ObjectHideFlags: 0
