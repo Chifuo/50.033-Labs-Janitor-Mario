@@ -12,5 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9f4c15a4b15704e08aa0525aed1b886a, type: 3}
   m_Name: GameScore
   m_EditorClassIdentifier: Assembly-CSharp::IntVariable
-  value: 11
-  previousHighestValue: 11
+  value: 56
+  previousHighestValue: 56
