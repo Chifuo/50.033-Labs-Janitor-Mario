@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8aec896ba302c49a5a9f2cc55b77ab2c, type: 3}
+  m_Name: JanitorRankProgress
+  m_EditorClassIdentifier: Assembly-CSharp::JanitorMario.FSM.JanitorRankProgress
+  milestoneInterval: 10
+  rank: 0
+  nextScoreMilestone: 10
+  observedDeliveries: 0
+  gameOver: 0
+  recoveryElapsed: 0
+  specialShooCooldown: 0
+  pendingEvents: []

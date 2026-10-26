@@ -386,6 +386,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   gameScore: {fileID: 11400000, guid: 3b1fe325f71334282a4cb151fb49a5bd, type: 2}
+  rankProgress: {fileID: 11400000, guid: 35ac8b3b0f79c4b88972f39455980734, type: 2}
 --- !u!4 &61589306
 Transform:
   m_ObjectHideFlags: 0
@@ -3175,6 +3176,7 @@ GameObject:
   - component: {fileID: 990316213}
   - component: {fileID: 990316215}
   - component: {fileID: 990316214}
+  - component: {fileID: 990316216}
   m_Layer: 7
   m_Name: Mario
   m_TagString: Player
@@ -3551,6 +3553,52 @@ MonoBehaviour:
   m_DefaultActionMap: Gameplay
   m_SplitScreenIndex: -1
   m_Camera: {fileID: 0}
+--- !u!114 &990316216
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 990316207}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fcafc1de71c174e55b03c79e2e9b6b49, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::JanitorMario.FSM.MarioStateController
+  startState: {fileID: 11400000, guid: ba16f7b3636b64ca7a66eeb8e57231ef, type: 2}
+  remainState: {fileID: 0}
+  isActive: 1
+  currentState: {fileID: 0}
+  previousState: {fileID: 0}
+  stateTimeElapsed: 0
+  player: {fileID: 0}
+  stateAudio: {fileID: 0}
+  shooLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  resumeStates:
+  - rank: 0
+    state: {fileID: 11400000, guid: ba16f7b3636b64ca7a66eeb8e57231ef, type: 2}
+  - rank: 1
+    state: {fileID: 11400000, guid: 3c7022e60dfa04d83964180b7adfc759, type: 2}
+  - rank: 2
+    state: {fileID: 11400000, guid: a7b2574abfd624dd2b18133f92f1fa39, type: 2}
+  - rank: 3
+    state: {fileID: 11400000, guid: 0f0724bed17874b3a880484be72675ba, type: 2}
+  - rank: 4
+    state: {fileID: 11400000, guid: 107133e822729412199dcbe9e384cbaa, type: 2}
+  recoveryStarted:
+    m_PersistentCalls:
+      m_Calls: []
+  recoveryEnded:
+    m_PersistentCalls:
+      m_Calls: []
+  specialShooPerformed:
+    m_PersistentCalls:
+      m_Calls: []
+  janitorState: 0
+  recovering: 0
+  shooCooldownRemaining: 0
 --- !u!1 &992579665
 GameObject:
   m_ObjectHideFlags: 0

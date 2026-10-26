@@ -23,14 +23,14 @@ public class GameManager : MonoBehaviour
     public int GoombaShooedNumber { get; private set; }
 
     [SerializeField] private IntVariable gameScore;
+    [SerializeField] private JanitorMario.FSM.JanitorRankProgress rankProgress;
+    public JanitorMario.FSM.JanitorRankProgress RankProgress => rankProgress;
     public int Score => gameScore.Value;
     public int HighScore => gameScore.PreviousHighestValue;
     public float PlayerSpeed { get; private set; }
     public float PlayerMaxSpeed { get; private set; }
     public float PlayerDashSpeed { get; private set; }
     public bool PlayerIsSpedup {  get; private set; }
-    //private float SpeedupTime = 5f;
-    //private float SpeedupTimeRemaining;
     private static GameManager _instance;
 
     public static GameManager instance
@@ -40,6 +40,7 @@ public class GameManager : MonoBehaviour
 
     private static void InitialState()
     {
+        instance.rankProgress.ResetForNewRun();
         instance.gameScore.Value = 0;
         instance.GoombaDeliveries = 0;
         instance.GoombaShooedNumber = 0;
@@ -63,13 +64,11 @@ public class GameManager : MonoBehaviour
     }
     private void Awake()
     {
-        // check if the _instance is not this, means it's been set before, return
         if (_instance != null && _instance != this)
         {
             Destroy(this.gameObject);
             return;
         }
-        // otherwise this is the first time this instance is created
         _instance = this;
         InitialState();
         DontDestroyOnLoad(this.gameObject);
@@ -112,6 +111,7 @@ public class GameManager : MonoBehaviour
         if (IsGameOver)
             return;
         gameScore.ApplyChange(increment);
+        rankProgress.RecordScore(Score);
         SetScore(Score);
         scoreIncreased.Invoke();
     }
@@ -129,6 +129,7 @@ public class GameManager : MonoBehaviour
         if (IsGameOver)
             return;
         IsGameOver = true;
+        rankProgress.MarkGameOver();
         gameOver.Invoke();
     }
 
@@ -138,6 +139,7 @@ public class GameManager : MonoBehaviour
             return;
 
         GoombaDeliveries++;
+        rankProgress.RecordDeliveries(GoombaDeliveries);
         deliveryCountChange.Invoke(GoombaDeliveries);
         goombaDeliveredTrash.Invoke();
         if (GoombaDeliveries >= Mathf.Max(1, deliveriesToLose))

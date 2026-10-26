@@ -26,17 +26,14 @@ public class PlayerMovement : MonoBehaviour
     public bool isSpedup;
     private Vector2 movementInput;
     private GameManager manager;
+    private JanitorMario.FSM.MarioStateController mainFsm;
+    public bool GameIsOver => manager != null && manager.IsGameOver;
+    public JanitorMario.FSM.JanitorRankProgress RankProgress => manager != null ? manager.RankProgress : null;
     private readonly HashSet<GoombaShoo> fightingGoombas = new HashSet<GoombaShoo>();
     public bool IsFightingGoomba => fightingGoombas.Count > 0;
-    // For now, its not so much of a fight, more like... press space to shoo it away. 
-    // In the future perhaps we can introduce broom slashing?
     public void BeginGoombaFight(GoombaShoo enemy)
     {
         fightingGoombas.Add(enemy);
-        // Contact lets Mario shoo; physics handles the bump.
-        // isDashing = false;
-        // cooldownRemaining = Mathf.Max(0f, dashCooldown);
-        // marioBody.linearVelocity = Vector2.zero;
     }
 
     public void EndGoombaFight(GoombaShoo enemy)
@@ -52,7 +49,6 @@ public class PlayerMovement : MonoBehaviour
         isDying = true;
         isDashing = false;
         marioBody.linearVelocity = Vector2.zero;
-        // GetComponent<Collider2D>().enabled = false;
         foreach (Collider2D collider in GetComponentsInChildren<Collider2D>(true))
             collider.enabled = false;
         marioAnimator.ResetTrigger("onSkid");
@@ -93,13 +89,25 @@ public class PlayerMovement : MonoBehaviour
         dashSpeed = GameManager.instance.PlayerDashSpeed;
     }
 
+    private void Awake()
+    {
+        marioSprite = GetComponent<SpriteRenderer>();
+        marioBody = GetComponent<Rigidbody2D>();
+        mainFsm = GetComponent<JanitorMario.FSM.MarioStateController>();
+    }
+
+    private void HandleGameOver()
+    {
+        // A running FSM starts death through its Fired setup action.
+        if (mainFsm == null || !mainFsm.ControlsGameplay)
+            BeginDeath();
+    }
+
     private void Start()
     {
         isDying = false;
-        marioSprite = GetComponent<SpriteRenderer>();
-        marioBody = GetComponent<Rigidbody2D>();
         manager = GameManager.instance;
-        manager.gameOver.AddListener(BeginDeath);
+        manager.gameOver.AddListener(HandleGameOver);
         manager.playerEndSpedup.AddListener(GetNormalSpeed);
         manager.playerSpedup.AddListener(GetSpedupSpeed);
         GetNormalSpeed();
@@ -109,7 +117,7 @@ public class PlayerMovement : MonoBehaviour
     {
         if (manager == null)
             return;
-        manager.gameOver.RemoveListener(BeginDeath);
+        manager.gameOver.RemoveListener(HandleGameOver);
         manager.playerEndSpedup.RemoveListener(GetNormalSpeed);
         manager.playerSpedup.RemoveListener(GetSpedupSpeed);
     }
@@ -120,9 +128,7 @@ public class PlayerMovement : MonoBehaviour
 
         marioAnimator.SetFloat("xSpeed", marioBody.linearVelocity.magnitude);
 
-        // if (IsFightingGoomba)
-        //     return;
-        if (GameManager.instance != null && GameManager.instance.IsGameOver)
+        if (GameIsOver)
             return;
 
         if (movementInput.x < 0f && faceRightState)
@@ -152,7 +158,7 @@ public class PlayerMovement : MonoBehaviour
 
     public void Dash()
     {
-        if (!isActiveAndEnabled || isDying || (GameManager.instance != null && GameManager.instance.IsGameOver) ||
+        if (!isActiveAndEnabled || isDying || GameIsOver ||
             isDashing || cooldownRemaining > 0f)
             return;
 
@@ -166,14 +172,28 @@ public class PlayerMovement : MonoBehaviour
 
     public void Shoo()
     {
-        if (!isActiveAndEnabled || isDying || (GameManager.instance != null && GameManager.instance.IsGameOver))
+        if (!isActiveAndEnabled || isDying || GameIsOver)
+            return;
+
+        if (mainFsm != null && mainFsm.ControlsGameplay)
+        {
+            mainFsm.Shoo();
+            return;
+        }
+
+        ShooContact(1f);
+    }
+
+    public void ShooContact(float strength)
+    {
+        if (!isActiveAndEnabled || isDying || GameIsOver)
             return;
 
         // A successful shoo removes the Goomba from this set.
         foreach (GoombaShoo enemy in new List<GoombaShoo>(fightingGoombas))
         {
             if (enemy != null)
-                enemy.TryShoo(this);
+                enemy.TryShoo(this, strength);
         }
     }
     private void Decay()
@@ -187,7 +207,7 @@ public class PlayerMovement : MonoBehaviour
         if (isDying)
             return;
 
-        if (GameManager.instance != null && GameManager.instance.IsGameOver)
+        if (GameIsOver)
         {
             marioBody.linearVelocity = Vector2.zero;
             marioBody.angularVelocity = 0f;
@@ -196,23 +216,11 @@ public class PlayerMovement : MonoBehaviour
             return;
         }
 
-        // Old contact freeze. Keep moving so Mario can steer away or push the goombas physically.
-        // if (IsFightingGoomba)
-        // {
-        //     marioBody.linearVelocity = Vector2.zero;
-        //     marioBody.angularVelocity = 0f;
-        //     return;
-        // }
-
-        Debug.Log(isSpedup);
-        Debug.Log(speedupTimeRemaining);
-
         if (isSpedup)
         {
             if (speedupTimeRemaining > 0f)
             {
                 Decay();
-                //return;
             }
             else
             {

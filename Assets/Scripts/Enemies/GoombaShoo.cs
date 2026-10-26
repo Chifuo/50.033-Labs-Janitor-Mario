@@ -3,12 +3,12 @@ using UnityEngine;
 
 public class GoombaShoo : MonoBehaviour
 {
-    // Space shoos a Goomba while Mario is touching it.
     [SerializeField, Min(0f)] private float retreatSpeed = 5f;
     [SerializeField, Min(0f)] private float retreatDuration = 0.3f;
     private PlayerMovement fightingPlayer;
     private Vector2 retreatDirection;
     private float retreatUntil;
+    private float activeRetreatSpeed;
     private EnemyMovement movement;
     private GoombaTrashCarrier trashCarrier;
     public event Action Shooed;
@@ -24,30 +24,33 @@ public class GoombaShoo : MonoBehaviour
 
     public void CheckContact()
     {
-        if (fightingPlayer != null)
-        {
-            if (!fightingPlayer.isActiveAndEnabled)
-            {
-                EndFight();
-                // return; // Old stop-on-contact behaviour.
-            }
-            // return; // Old stop-on-contact behaviour.
-        }
+        if (fightingPlayer != null && !fightingPlayer.isActiveAndEnabled)
+            EndFight();
     }
 
-    public void TryShoo(PlayerMovement player)
+    public void TryShoo(PlayerMovement player, float strength = 1f)
     {
-        if (!isActiveAndEnabled || player == null || !player.isActiveAndEnabled ||
-            fightingPlayer != player || movement == null || !movement.isActiveAndEnabled ||
-            movement.IsGameOver || IsRetreating)
+        if (fightingPlayer != player || !CanBeShooed(player))
             return;
 
-        ShooAway();
+        ShooAway(player, strength);
+    }
+
+    public void TryAreaShoo(PlayerMovement player, float strength)
+    {
+        if (CanBeShooed(player))
+            ShooAway(player, strength);
+    }
+
+    private bool CanBeShooed(PlayerMovement player)
+    {
+        return isActiveAndEnabled && player != null && player.isActiveAndEnabled &&
+            movement != null && movement.isActiveAndEnabled && !movement.IsGameOver && !IsRetreating;
     }
 
     public Vector2 GetRetreatVelocity()
     {
-        Vector2 step = retreatDirection * Mathf.Max(0f, retreatSpeed) * Time.fixedDeltaTime;
+        Vector2 step = retreatDirection * activeRetreatSpeed * Time.fixedDeltaTime;
         return movement.CanTravel(movement.Position, movement.Position + step)
             ? step / Time.fixedDeltaTime : Vector2.zero;
     }
@@ -71,8 +74,8 @@ public class GoombaShoo : MonoBehaviour
 
     private void InteractWithPlayer(Collider2D other)
     {
-        if (movement == null || !movement.isActiveAndEnabled || fightingPlayer != null || Time.time < retreatUntil || !other.CompareTag("Player") ||
-            movement.IsGameOver)
+        if (movement == null || !movement.isActiveAndEnabled || fightingPlayer != null ||
+            IsRetreating || !other.CompareTag("Player") || movement.IsGameOver)
             return;
 
         PlayerMovement player = other.GetComponentInParent<PlayerMovement>();
@@ -80,21 +83,20 @@ public class GoombaShoo : MonoBehaviour
             return;
         fightingPlayer = player;
         player.BeginGoombaFight(this);
-        // GetComponent<Rigidbody2D>().linearVelocity = Vector2.zero;
     }
 
-    private void ShooAway()
+    private void ShooAway(PlayerMovement player, float strength)
     {
-        Vector2 playerPosition = fightingPlayer.GetComponent<Rigidbody2D>().position;
+        Vector2 playerPosition = player.GetComponent<Rigidbody2D>().position;
         retreatDirection = (movement.Position - playerPosition).normalized;
         if (retreatDirection == Vector2.zero)
             retreatDirection = Vector2.right;
 
         trashCarrier.DropNearPlayer(playerPosition, movement.NavigationBounds);
-        // GetComponent<Rigidbody2D>().linearVelocity = Vector2.zero;
-        retreatUntil = Time.time + Mathf.Max(0f, retreatDuration);
+        float multiplier = Mathf.Max(1f, strength);
+        activeRetreatSpeed = Mathf.Max(0f, retreatSpeed) * multiplier;
+        retreatUntil = Time.time + Mathf.Max(0f, retreatDuration) * multiplier;
         movement.ClearRoute(retreatUntil);
-        PlayerMovement player = fightingPlayer;
         EndFight();
 
         player.goombaShooed.Invoke();
@@ -113,6 +115,7 @@ public class GoombaShoo : MonoBehaviour
     {
         EndFight();
         retreatUntil = 0f;
+        activeRetreatSpeed = 0f;
         retreatDirection = Vector2.zero;
     }
 }
