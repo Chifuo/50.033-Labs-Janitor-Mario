@@ -596,6 +596,7 @@ MonoBehaviour:
       m_Calls: []
   gameScore: {fileID: 11400000, guid: 3b1fe325f71334282a4cb151fb49a5bd, type: 2}
   rankProgress: {fileID: 11400000, guid: 35ac8b3b0f79c4b88972f39455980734, type: 2}
+  buffProgress: {fileID: 11400000, guid: f28085b69a8704f04b1d1eb94f1c060a, type: 2}
 --- !u!4 &435889455
 Transform:
   m_ObjectHideFlags: 0

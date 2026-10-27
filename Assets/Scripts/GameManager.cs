@@ -24,13 +24,11 @@ public class GameManager : MonoBehaviour
 
     [SerializeField] private IntVariable gameScore;
     [SerializeField] private JanitorMario.FSM.JanitorRankProgress rankProgress;
+    [SerializeField] private JanitorMario.FSM.BuffProgress buffProgress;
     public JanitorMario.FSM.JanitorRankProgress RankProgress => rankProgress;
+    public JanitorMario.FSM.BuffProgress BuffProgress => buffProgress;
     public int Score => gameScore.Value;
     public int HighScore => gameScore.PreviousHighestValue;
-    public float PlayerSpeed { get; private set; }
-    public float PlayerMaxSpeed { get; private set; }
-    public float PlayerDashSpeed { get; private set; }
-    public bool PlayerIsSpedup {  get; private set; }
     private static GameManager _instance;
 
     public static GameManager instance
@@ -41,27 +39,14 @@ public class GameManager : MonoBehaviour
     private static void InitialState()
     {
         instance.rankProgress.ResetForNewRun();
+        instance.buffProgress.ResetForNewRun();
         instance.gameScore.Value = 0;
         instance.GoombaDeliveries = 0;
         instance.GoombaShooedNumber = 0;
         instance.IsGameOver = false;
-        instance.PlayerIsSpedup = false;
-        PlayerNormalSpeed();
         Time.timeScale = 1f;
     }
 
-    private static void PlayerNormalSpeed()
-    {
-        instance.PlayerSpeed = 100;
-        instance.PlayerMaxSpeed = 200;
-        instance.PlayerDashSpeed = 400f;
-    }
-    private static void PlayerSpedupSpeed()
-    {
-        instance.PlayerSpeed = 200;
-        instance.PlayerMaxSpeed = 400;
-        instance.PlayerDashSpeed = 400f;
-    }
     private void Awake()
     {
         if (_instance != null && _instance != this)
@@ -156,17 +141,7 @@ public class GameManager : MonoBehaviour
     public void RecordPlayerSpedup()
     {
         if (IsGameOver) return;
-        PlayerIsSpedup = true;
-        PlayerSpedupSpeed();
+        buffProgress.RequestSpeedUp();
         playerSpedup.Invoke();
-    }
-
-    public void RecordPlayerEndSpeedup()
-    {
-        if (IsGameOver) return;
-        PlayerIsSpedup = false;
-        PlayerNormalSpeed();
-        playerEndSpedup.Invoke();
-
     }
 }

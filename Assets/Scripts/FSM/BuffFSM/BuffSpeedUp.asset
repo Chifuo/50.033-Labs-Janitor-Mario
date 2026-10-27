@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: abec09820b37040ff9a9b24d4171ff72, type: 3}
+  m_Name: BuffSpeedUp
+  m_EditorClassIdentifier: Assembly-CSharp::JanitorMario.FSM.State
+  setupActions:
+  - {fileID: 11400000, guid: 2a5ba81c61d3546659127e4f869c4b33, type: 2}
+  actions: []
+  eventTriggeredActions: []
+  exitActions: []
+  transitions:
+  - decision: {fileID: 11400000, guid: 3909e76184ddd412086f4dd364b6b775, type: 2}
+    trueState: {fileID: 11400000, guid: a67c28b0ade9a43c39acbe01aaddff76, type: 2}
+    falseState: {fileID: 0}
+  sceneGizmoColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}

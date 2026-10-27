@@ -13,14 +13,12 @@ public class PlayerMovement : MonoBehaviour
     [Min(0f)] public float dashSpeed;
     [Min(0.01f)] private float dashDuration = 0.15f;
     [Min(0f)] private float dashCooldown = 1f;
-    private float speedupTime = 5f;
     private Rigidbody2D marioBody;
     private SpriteRenderer marioSprite;
     private bool faceRightState = true;
     private Vector2 dashDirection;
     private float dashTimeRemaining;
     private float cooldownRemaining;
-    private float speedupTimeRemaining;
     private bool isDashing;
     private bool isDying;
     public bool isSpedup;
@@ -29,6 +27,7 @@ public class PlayerMovement : MonoBehaviour
     private JanitorMario.FSM.MarioStateController mainFsm;
     public bool GameIsOver => manager != null && manager.IsGameOver;
     public JanitorMario.FSM.JanitorRankProgress RankProgress => manager != null ? manager.RankProgress : null;
+    public JanitorMario.FSM.BuffProgress BuffProgress => manager != null ? manager.BuffProgress : null;
     private readonly HashSet<GoombaShoo> fightingGoombas = new HashSet<GoombaShoo>();
     public bool IsFightingGoomba => fightingGoombas.Count > 0;
     public void BeginGoombaFight(GoombaShoo enemy)
@@ -72,21 +71,15 @@ public class PlayerMovement : MonoBehaviour
 
         deathFinished.Invoke();
     }
-    private void GetNormalSpeed()
+    public void SetSpeedUp(bool active)
     {
-        isSpedup = GameManager.instance.PlayerIsSpedup;
-        speed = GameManager.instance.PlayerSpeed;
-        maxSpeed = GameManager.instance.PlayerMaxSpeed;
-        dashSpeed = GameManager.instance.PlayerDashSpeed;
-        speedupTimeRemaining = speedupTime;
-    }
-
-    private void GetSpedupSpeed()
-    {
-        isSpedup = GameManager.instance.PlayerIsSpedup;
-        speed = GameManager.instance.PlayerSpeed;
-        maxSpeed = GameManager.instance.PlayerMaxSpeed;
-        dashSpeed = GameManager.instance.PlayerDashSpeed;
+        bool wasSpedUp = isSpedup;
+        isSpedup = active;
+        speed = active ? 200f : 100f;
+        maxSpeed = active ? 400f : 200f;
+        dashSpeed = 400f;
+        if (wasSpedUp && !active)
+            manager.playerEndSpedup.Invoke();
     }
 
     private void Awake()
@@ -108,9 +101,7 @@ public class PlayerMovement : MonoBehaviour
         isDying = false;
         manager = GameManager.instance;
         manager.gameOver.AddListener(HandleGameOver);
-        manager.playerEndSpedup.AddListener(GetNormalSpeed);
-        manager.playerSpedup.AddListener(GetSpedupSpeed);
-        GetNormalSpeed();
+        SetSpeedUp(false);
 
     }
     private void OnDestroy()
@@ -118,8 +109,6 @@ public class PlayerMovement : MonoBehaviour
         if (manager == null)
             return;
         manager.gameOver.RemoveListener(HandleGameOver);
-        manager.playerEndSpedup.RemoveListener(GetNormalSpeed);
-        manager.playerSpedup.RemoveListener(GetSpedupSpeed);
     }
     private void Update()
     {
@@ -196,12 +185,6 @@ public class PlayerMovement : MonoBehaviour
                 enemy.TryShoo(this, strength);
         }
     }
-    private void Decay()
-    {
-        speedupTimeRemaining = Mathf.Max(0f, speedupTimeRemaining - Time.deltaTime);
-    }
-
-
     private void FixedUpdate()
     {
         if (isDying)
@@ -214,18 +197,6 @@ public class PlayerMovement : MonoBehaviour
             isDashing = false;
             cooldownRemaining = 0f;
             return;
-        }
-
-        if (isSpedup)
-        {
-            if (speedupTimeRemaining > 0f)
-            {
-                Decay();
-            }
-            else
-            {
-                GameManager.instance.RecordPlayerEndSpeedup();
-            }
         }
 
         if (isDashing)

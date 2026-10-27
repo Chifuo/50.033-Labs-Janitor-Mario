@@ -387,6 +387,7 @@ MonoBehaviour:
       m_Calls: []
   gameScore: {fileID: 11400000, guid: 3b1fe325f71334282a4cb151fb49a5bd, type: 2}
   rankProgress: {fileID: 11400000, guid: 35ac8b3b0f79c4b88972f39455980734, type: 2}
+  buffProgress: {fileID: 11400000, guid: f28085b69a8704f04b1d1eb94f1c060a, type: 2}
 --- !u!4 &61589306
 Transform:
   m_ObjectHideFlags: 0
@@ -3177,6 +3178,7 @@ GameObject:
   - component: {fileID: 990316215}
   - component: {fileID: 990316214}
   - component: {fileID: 990316216}
+  - component: {fileID: 990316217}
   m_Layer: 7
   m_Name: Mario
   m_TagString: Player
@@ -3599,6 +3601,26 @@ MonoBehaviour:
   janitorState: 0
   recovering: 0
   shooCooldownRemaining: 0
+--- !u!114 &990316217
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 990316207}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ae54be02a41d24575ada6d5275693065, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::JanitorMario.FSM.BuffStateController
+  startState: {fileID: 11400000, guid: a67c28b0ade9a43c39acbe01aaddff76, type: 2}
+  remainState: {fileID: 0}
+  isActive: 1
+  currentState: {fileID: 0}
+  previousState: {fileID: 0}
+  stateTimeElapsed: 0
+  player: {fileID: 0}
+  speedUpState: {fileID: 11400000, guid: 757516a0a70794ac191c2f78e505b24b, type: 2}
 --- !u!1 &992579665
 GameObject:
   m_ObjectHideFlags: 0
