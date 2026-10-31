@@ -1,8 +1,11 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class CollectTrash : MonoBehaviour
 {
+    public GameEvent<int> onScoreIncreased;
+    [SerializeField] private IntVariable gameScore;
     [Min(0f)] public float collectionDuration = 0.5f;
     public float RemainingTime => collectionTimer;
     public bool CanPlayerCollect { get; private set; }
@@ -26,8 +29,7 @@ public class CollectTrash : MonoBehaviour
     private void Update()
     {
         nearbyPlayers.RemoveWhere(player => player == null || !player.enabled || !player.gameObject.activeInHierarchy);
-        CanPlayerCollect = IsOnGround && nearbyPlayers.Count > 0 &&
-            (GameManager.instance == null || !GameManager.instance.IsGameOver) && !PlayerIsFighting();
+        CanPlayerCollect = IsOnGround && nearbyPlayers.Count > 0 && !gameScore.GameOver && !PlayerIsFighting();
 
         if (!CanPlayerCollect || !Input.GetKey(KeyCode.F))
         {
@@ -36,10 +38,10 @@ public class CollectTrash : MonoBehaviour
         }
 
         collectionTimer = Mathf.Max(0f, collectionTimer - Time.deltaTime);
-        if (collectionTimer <= 0f && GameManager.instance != null)
+        if (collectionTimer <= 0f)
         {
             Consume();
-            GameManager.instance.IncreaseScore(1);
+            onScoreIncreased.Raise(1);
         }
     }
 
@@ -62,7 +64,7 @@ public class CollectTrash : MonoBehaviour
 
     public bool TryPickUp(GoombaTrashCarrier enemy)
     {
-        if (enemy == null || !CanEnemyPickUp || (GameManager.instance != null && GameManager.instance.IsGameOver))
+        if (enemy == null || !CanEnemyPickUp || gameScore.GameOver)
             return false;
 
         carrier = enemy;

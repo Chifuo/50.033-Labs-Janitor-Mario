@@ -55,7 +55,7 @@ namespace JanitorMario.FSM
         public bool HasPendingPromotion => !IsGameOver &&
             (janitorState == JanitorState.Rookie || janitorState == JanitorState.Equipped) &&
             progress.NextEventIs(RankProgressEventType.Promotion);
-        public bool IsGameOver => progress.GameOver || player.GameIsOver;
+        public bool IsGameOver => progress.GameOver;
 
         private void Awake()
         {

@@ -1,10 +1,13 @@
 using System;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class GoombaShoo : MonoBehaviour
 {
+    public UnityEvent onGoombaShooed;
     [SerializeField, Min(0f)] private float retreatSpeed = 5f;
     [SerializeField, Min(0f)] private float retreatDuration = 0.3f;
+    [SerializeField] private IntVariable gameScore;
     private PlayerMovement fightingPlayer;
     private Vector2 retreatDirection;
     private float retreatUntil;
@@ -45,7 +48,7 @@ public class GoombaShoo : MonoBehaviour
     private bool CanBeShooed(PlayerMovement player)
     {
         return isActiveAndEnabled && player != null && player.isActiveAndEnabled &&
-            movement != null && movement.isActiveAndEnabled && !movement.IsGameOver && !IsRetreating;
+            movement != null && movement.isActiveAndEnabled && !IsRetreating && !gameScore.GameOver;
     }
 
     public Vector2 GetRetreatVelocity()
@@ -75,7 +78,7 @@ public class GoombaShoo : MonoBehaviour
     private void InteractWithPlayer(Collider2D other)
     {
         if (movement == null || !movement.isActiveAndEnabled || fightingPlayer != null ||
-            IsRetreating || !other.CompareTag("Player") || movement.IsGameOver)
+            IsRetreating || !other.CompareTag("Player"))
             return;
 
         PlayerMovement player = other.GetComponentInParent<PlayerMovement>();
@@ -99,9 +102,8 @@ public class GoombaShoo : MonoBehaviour
         movement.ClearRoute(retreatUntil);
         EndFight();
 
-        player.goombaShooed.Invoke();
         Shooed?.Invoke();
-        GameManager.instance.RecordGoombaShooed();
+        onGoombaShooed.Invoke();
     }
 
     public void EndFight()

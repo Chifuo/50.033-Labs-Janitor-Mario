@@ -8,12 +8,13 @@ namespace JanitorMario.FSM
     public class BuffStateController : StateController
     {
         [SerializeField] private PlayerMovement player;
+        [SerializeField] private IntVariable gameScore;
         public State speedUpState;
         private BuffProgress progress;
         private int runVersion;
         private bool restoring;
 
-        public bool HasSpeedUpPickup => progress.PickupPending && !player.GameIsOver;
+        public bool HasSpeedUpPickup => progress.PickupPending && !gameScore.GameOver;
 
         private void Awake()
         {
@@ -41,7 +42,7 @@ namespace JanitorMario.FSM
             restoring = false;
 
             // A pickup just before scene unload still needs to take effect.
-            if (!player.GameIsOver)
+            if (!gameScore.GameOver)
                 CurrentState.CheckTransitions(this);
             SaveProgress();
         }
@@ -55,7 +56,7 @@ namespace JanitorMario.FSM
 
         protected override void Update()
         {
-            if (!isActive || player.GameIsOver || progress.RunVersion != runVersion ||
+            if (!isActive || gameScore.GameOver || progress.RunVersion != runVersion ||
                 Time.deltaTime <= 0f)
                 return;
 

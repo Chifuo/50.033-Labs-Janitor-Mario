@@ -4,75 +4,42 @@ using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
-    public UnityEvent gameStart = new UnityEvent();
-    public UnityEvent gameOver = new UnityEvent();
-    public UnityEvent gameRestart = new UnityEvent();
-    public UnityEvent gamePaused = new UnityEvent();
-    public UnityEvent gameNextScene = new UnityEvent();
-    public UnityEvent<int> scoreChange = new UnityEvent<int>();
-    public UnityEvent scoreIncreased = new UnityEvent();
-    public UnityEvent<int> deliveryCountChange = new UnityEvent<int>();
-    public UnityEvent goombaDeliveredTrash = new UnityEvent();
-    public UnityEvent goombaShooed = new UnityEvent();
-    public UnityEvent playerSpedup = new UnityEvent();
-    public UnityEvent playerEndSpedup = new UnityEvent();
+    public UnityEvent onGameStart;
+    public UnityEvent onGameOver;
+    public GameEvent<int> onScoreChange;
+    public GameEvent<int> onDeliveryCountChange;
     [Min(1)] private int deliveriesToLose = 3;
-
-    public bool IsGameOver { get; private set; }
-    public int GoombaDeliveries { get; private set; }
-    public int GoombaShooedNumber { get; private set; }
 
     [SerializeField] private IntVariable gameScore;
     [SerializeField] private JanitorMario.FSM.JanitorRankProgress rankProgress;
     [SerializeField] private JanitorMario.FSM.BuffProgress buffProgress;
     public JanitorMario.FSM.JanitorRankProgress RankProgress => rankProgress;
     public JanitorMario.FSM.BuffProgress BuffProgress => buffProgress;
-    public int Score => gameScore.Value;
-    public int HighScore => gameScore.PreviousHighestValue;
-    private static GameManager _instance;
+    public bool IsGameOver => gameScore.GameOver;
 
-    public static GameManager instance
+    private void InitialState()
     {
-        get { return _instance; }
-    }
-
-    private static void InitialState()
-    {
-        instance.rankProgress.ResetForNewRun();
-        instance.buffProgress.ResetForNewRun();
-        instance.gameScore.Value = 0;
-        instance.GoombaDeliveries = 0;
-        instance.GoombaShooedNumber = 0;
-        instance.IsGameOver = false;
+        rankProgress.ResetForNewRun();
+        buffProgress.ResetForNewRun();
+        gameScore.ApplyDefaultValues();
         Time.timeScale = 1f;
     }
 
     private void Awake()
     {
-        if (_instance != null && _instance != this)
-        {
-            Destroy(this.gameObject);
-            return;
-        }
-        _instance = this;
         InitialState();
-        DontDestroyOnLoad(this.gameObject);
     }
     private void Start()
     {
-        gameStart.Invoke();
-        SetScore(Score);
-        deliveryCountChange.Invoke(GoombaDeliveries);
-    }
-    private void OnDestroy()
-    {
-        if (_instance == this)
-            _instance = null;
+        onGameStart.Invoke();
+        InitialState();
+        SetScore(gameScore.Value);
+        onDeliveryCountChange.Raise(gameScore.Deliveries);
     }
     public void GameRestart()
     {
         InitialState();
-        SetScore(Score);
+        SetScore(gameScore.Value);
         SceneManager.LoadSceneAsync("Stage-1");
     }
     public void GameNextScene()
@@ -95,14 +62,13 @@ public class GameManager : MonoBehaviour
     {
         if (IsGameOver)
             return;
-        gameScore.ApplyChange(increment);
-        rankProgress.RecordScore(Score);
-        SetScore(Score);
-        scoreIncreased.Invoke();
+        gameScore.ApplyChange("Value",increment);
+        rankProgress.RecordScore(gameScore.Value);
+        SetScore(gameScore.Value);
     }
     public void SetScore(int score)
     {
-        scoreChange.Invoke(score);
+        onScoreChange.Raise(score);
     }
 
     public void ResetHighScore()
@@ -111,11 +77,21 @@ public class GameManager : MonoBehaviour
     }
     public void GameOver()
     {
-        if (IsGameOver)
-            return;
-        IsGameOver = true;
+        onGameOver.Invoke();
         rankProgress.MarkGameOver();
-        gameOver.Invoke();
+        gameScore.ApplyGameOver();
+        
+        Debug.Log("Final Score:" + gameScore.Value);
+    }
+
+    public void GamePaused()
+    {
+        Time.timeScale = 0f;
+    }
+
+    public void GameResumed()
+    {
+        Time.timeScale = 1.0f;
     }
 
     public void RecordGoombaDelivery()
@@ -123,25 +99,24 @@ public class GameManager : MonoBehaviour
         if (IsGameOver)
             return;
 
-        GoombaDeliveries++;
-        rankProgress.RecordDeliveries(GoombaDeliveries);
-        deliveryCountChange.Invoke(GoombaDeliveries);
-        goombaDeliveredTrash.Invoke();
-        if (GoombaDeliveries >= Mathf.Max(1, deliveriesToLose))
+        gameScore.ApplyChange("Deliveries", 1);
+        rankProgress.RecordDeliveries(gameScore.Deliveries);
+        onDeliveryCountChange.Raise(gameScore.Deliveries);
+        if (gameScore.Deliveries >= Mathf.Max(1, deliveriesToLose))
             GameOver();
     }
 
     public void RecordGoombaShooed()
     {
-        if (IsGameOver) return;
-        GoombaShooedNumber++;
-        goombaShooed.Invoke();
+        if (IsGameOver) 
+            return;
+        gameScore.ApplyChange("Shooed", 1);
     }
 
     public void RecordPlayerSpedup()
     {
-        if (IsGameOver) return;
+        if (IsGameOver) 
+            return;
         buffProgress.RequestSpeedUp();
-        playerSpedup.Invoke();
     }
 }

@@ -539,6 +539,8 @@ GameObject:
   m_Component:
   - component: {fileID: 435889455}
   - component: {fileID: 435889454}
+  - component: {fileID: 435889457}
+  - component: {fileID: 435889456}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -558,39 +560,38 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 31ac177a3d5a6614b992994689653483, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GameManager
-  gameStart:
+  onGameStart:
     m_PersistentCalls:
-      m_Calls: []
-  gameOver:
+      m_Calls:
+      - m_Target: {fileID: 11400000, guid: 535c2a32d1961ae45bc6eb04b5944271, type: 2}
+        m_TargetAssemblyTypeName: SimpleGameEvent, Assembly-CSharp
+        m_MethodName: Raise
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  onGameOver:
     m_PersistentCalls:
-      m_Calls: []
-  gameRestart:
-    m_PersistentCalls:
-      m_Calls: []
-  gamePaused:
-    m_PersistentCalls:
-      m_Calls: []
-  gameNextScene:
-    m_PersistentCalls:
-      m_Calls: []
-  scoreChange:
-    m_PersistentCalls:
-      m_Calls: []
-  scoreIncreased:
-    m_PersistentCalls:
-      m_Calls: []
-  deliveryCountChange:
-    m_PersistentCalls:
-      m_Calls: []
-  goombaDeliveredTrash:
-    m_PersistentCalls:
-      m_Calls: []
-  goombaShooed:
-    m_PersistentCalls:
-      m_Calls: []
-  playerSpedup:
-    m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 11400000, guid: 7c92bdd7dc02466499bfaf384386fd98, type: 2}
+        m_TargetAssemblyTypeName: SimpleGameEvent, Assembly-CSharp
+        m_MethodName: Raise
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  onScoreChange: {fileID: 11400000, guid: 2da573bc199bd2144b0df2c9795803ea, type: 2}
+  onDeliveryCountChange: {fileID: 11400000, guid: 46708316460a82a4e808fa66ffdabcb1, type: 2}
   playerEndSpedup:
     m_PersistentCalls:
       m_Calls: []
@@ -612,6 +613,62 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &435889456
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 435889453}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6c8d95ac68911be4683c2d2374b6fc33, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SimpleGameEventListener
+  Event: {fileID: 11400000, guid: 201f6e30af91c904ebb44c7c92612ba8, type: 2}
+  Response:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 435889454}
+        m_TargetAssemblyTypeName: GameManager, Assembly-CSharp
+        m_MethodName: GameNextScene
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+--- !u!114 &435889457
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 435889453}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6c8d95ac68911be4683c2d2374b6fc33, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SimpleGameEventListener
+  Event: {fileID: 11400000, guid: e9f1aa82910e19548aa923701d2e74f7, type: 2}
+  Response:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 435889454}
+        m_TargetAssemblyTypeName: GameManager, Assembly-CSharp
+        m_MethodName: ResetHighScore
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &499871325
 GameObject:
   m_ObjectHideFlags: 0
@@ -899,6 +956,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7011047f11e114c2ab64dc09ad581371, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::HighScoreDisplay
+  gameScore: {fileID: 11400000, guid: 3b1fe325f71334282a4cb151fb49a5bd, type: 2}
 --- !u!1 &1036831198
 GameObject:
   m_ObjectHideFlags: 0
@@ -1984,10 +2042,34 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c385e82a845544b47acd894430e50d33, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ButtonManager
-  PauseGame:
+  onGameNextScene:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 11400000, guid: 201f6e30af91c904ebb44c7c92612ba8, type: 2}
+        m_TargetAssemblyTypeName: SimpleGameEvent, Assembly-CSharp
+        m_MethodName: Raise
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  onGameReturnHome:
     m_PersistentCalls:
       m_Calls: []
-  UnpauseGame:
+  onGameRestart:
+    m_PersistentCalls:
+      m_Calls: []
+  onGamePaused:
+    m_PersistentCalls:
+      m_Calls: []
+  onGameUnpaused:
+    m_PersistentCalls:
+      m_Calls: []
+  onHighscoreReset:
     m_PersistentCalls:
       m_Calls: []
 --- !u!1 &1912646253
@@ -2042,6 +2124,7 @@ GameObject:
   - component: {fileID: 2074750507}
   - component: {fileID: 2074750506}
   - component: {fileID: 2074750505}
+  - component: {fileID: 2074750508}
   m_Layer: 5
   m_Name: RestartButton
   m_TagString: Untagged
@@ -2113,9 +2196,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 11400000, guid: 3b1fe325f71334282a4cb151fb49a5bd, type: 2}
-        m_TargetAssemblyTypeName: IntVariable, Assembly-CSharp
-        m_MethodName: ResetHighestValue
+      - m_Target: {fileID: 2074750508}
+        m_TargetAssemblyTypeName: ButtonManager, Assembly-CSharp
+        m_MethodName: ResetHighScoreButtonClick
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -2175,6 +2258,48 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2074750503}
   m_CullTransparentMesh: 1
+--- !u!114 &2074750508
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2074750503}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c385e82a845544b47acd894430e50d33, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ButtonManager
+  onGameNextScene:
+    m_PersistentCalls:
+      m_Calls: []
+  onGameReturnHome:
+    m_PersistentCalls:
+      m_Calls: []
+  onGameRestart:
+    m_PersistentCalls:
+      m_Calls: []
+  onGamePaused:
+    m_PersistentCalls:
+      m_Calls: []
+  onGameUnpaused:
+    m_PersistentCalls:
+      m_Calls: []
+  onHighscoreReset:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 11400000, guid: e9f1aa82910e19548aa923701d2e74f7, type: 2}
+        m_TargetAssemblyTypeName: SimpleGameEvent, Assembly-CSharp
+        m_MethodName: Raise
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &2109971606
 GameObject:
   m_ObjectHideFlags: 0

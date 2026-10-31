@@ -5,7 +5,6 @@ public class PlayerMovement : MonoBehaviour
 {
     public Animator marioAnimator;
     public UnityEvent deathFinished = new UnityEvent();
-    public UnityEvent goombaShooed = new UnityEvent();
     public float deathImpulse = 50f;
     public float deathGravityScale = 10f;
     public float speed;
@@ -23,11 +22,10 @@ public class PlayerMovement : MonoBehaviour
     private bool isDying;
     public bool isSpedup;
     private Vector2 movementInput;
-    private GameManager manager;
     private JanitorMario.FSM.MarioStateController mainFsm;
-    public bool GameIsOver => manager != null && manager.IsGameOver;
-    public JanitorMario.FSM.JanitorRankProgress RankProgress => manager != null ? manager.RankProgress : null;
-    public JanitorMario.FSM.BuffProgress BuffProgress => manager != null ? manager.BuffProgress : null;
+    public JanitorMario.FSM.JanitorRankProgress RankProgress;
+    public JanitorMario.FSM.BuffProgress BuffProgress;
+    [SerializeField] private IntVariable gameScore;
     private readonly HashSet<GoombaShoo> fightingGoombas = new HashSet<GoombaShoo>();
     public bool IsFightingGoomba => fightingGoombas.Count > 0;
     public void BeginGoombaFight(GoombaShoo enemy)
@@ -78,8 +76,7 @@ public class PlayerMovement : MonoBehaviour
         speed = active ? 200f : 100f;
         maxSpeed = active ? 400f : 200f;
         dashSpeed = 400f;
-        if (wasSpedUp && !active)
-            manager.playerEndSpedup.Invoke();
+        //if (wasSpedUp && !active)
     }
 
     private void Awake()
@@ -89,7 +86,7 @@ public class PlayerMovement : MonoBehaviour
         mainFsm = GetComponent<JanitorMario.FSM.MarioStateController>();
     }
 
-    private void HandleGameOver()
+    public void HandleGameOver()
     {
         // A running FSM starts death through its Fired setup action.
         if (mainFsm == null || !mainFsm.ControlsGameplay)
@@ -99,16 +96,8 @@ public class PlayerMovement : MonoBehaviour
     private void Start()
     {
         isDying = false;
-        manager = GameManager.instance;
-        manager.gameOver.AddListener(HandleGameOver);
         SetSpeedUp(false);
 
-    }
-    private void OnDestroy()
-    {
-        if (manager == null)
-            return;
-        manager.gameOver.RemoveListener(HandleGameOver);
     }
     private void Update()
     {
@@ -117,7 +106,7 @@ public class PlayerMovement : MonoBehaviour
 
         marioAnimator.SetFloat("xSpeed", marioBody.linearVelocity.magnitude);
 
-        if (GameIsOver)
+        if (gameScore.GameOver)
             return;
 
         if (movementInput.x < 0f && faceRightState)
@@ -147,7 +136,7 @@ public class PlayerMovement : MonoBehaviour
 
     public void Dash()
     {
-        if (!isActiveAndEnabled || isDying || GameIsOver ||
+        if (!isActiveAndEnabled || isDying || gameScore.GameOver ||
             isDashing || cooldownRemaining > 0f)
             return;
 
@@ -161,7 +150,7 @@ public class PlayerMovement : MonoBehaviour
 
     public void Shoo()
     {
-        if (!isActiveAndEnabled || isDying || GameIsOver)
+        if (!isActiveAndEnabled || isDying || gameScore.GameOver)
             return;
 
         if (mainFsm != null && mainFsm.ControlsGameplay)
@@ -175,7 +164,7 @@ public class PlayerMovement : MonoBehaviour
 
     public void ShooContact(float strength)
     {
-        if (!isActiveAndEnabled || isDying || GameIsOver)
+        if (!isActiveAndEnabled || isDying || gameScore.GameOver)
             return;
 
         // A successful shoo removes the Goomba from this set.
@@ -189,13 +178,12 @@ public class PlayerMovement : MonoBehaviour
     {
         if (isDying)
             return;
-
-        if (GameIsOver)
+        if (gameScore.GameOver)
         {
             marioBody.linearVelocity = Vector2.zero;
             marioBody.angularVelocity = 0f;
             isDashing = false;
-            cooldownRemaining = 0f;
+            cooldownRemaining = 0f; 
             return;
         }
 

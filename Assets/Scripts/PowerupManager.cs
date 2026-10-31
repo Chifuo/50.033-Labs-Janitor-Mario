@@ -1,7 +1,11 @@
 using UnityEngine;
+using UnityEngine.Events;
 
 public class PowerupManager : MonoBehaviour 
 {
+    public GameEvent<int> onScoreIncreased;
+    public UnityEvent onPlayerSpeedup;
+    [SerializeField] private IntVariable gameScore;
     public enum PowerupType { Coin, Speedup }
     public PowerupType PowerupPrefab;
     [Min(0f)] private float PowerupLifespan = 10f;
@@ -13,17 +17,14 @@ public class PowerupManager : MonoBehaviour
     }
     private void Update()
     {
-        if (GameManager.instance != null && GameManager.instance.IsGameOver)
-        {
+        if (gameScore.GameOver)
             return;
-        }
-        if (GameManager.instance != null && PowerupCountdown <= 0f)
+        if (PowerupCountdown <= 0f)
         {
             Destroy(gameObject);
         }
         Decay();
     }
-
     private void Decay()
     {
         PowerupCountdown = Mathf.Max(0f, PowerupCountdown - Time.deltaTime);
@@ -53,12 +54,12 @@ public class PowerupManager : MonoBehaviour
 
     private void CoinEffect()
     {
-        GameManager.instance.IncreaseScore(10);
+        onScoreIncreased.Raise(10);
     }
 
     private void SpeedupEffect()
     {
-        GameManager.instance.RecordPlayerSpedup();
+        onPlayerSpeedup.Invoke();
     }
 
 }

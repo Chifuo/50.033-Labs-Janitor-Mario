@@ -12,6 +12,7 @@ public class GeneratorManager : MonoBehaviour
     [Min(5)] public int MinimumTrashCount = 5;
     [Min(0f)] private float PowerupInterval = 5f;
     private float PowerupIntervalCountdown;
+    [SerializeField] private IntVariable gameScore;
     private readonly List<GameObject> activeTrash = new List<GameObject>();
 
     private void Start()
@@ -25,7 +26,7 @@ public class GeneratorManager : MonoBehaviour
 
     private void Update()
     {
-        if (GameManager.instance != null && GameManager.instance.IsGameOver)
+        if (gameScore.GameOver)
             return;
         activeTrash.RemoveAll(trash => trash == null);
         ReplenishTrash();

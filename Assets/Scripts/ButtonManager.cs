@@ -1,36 +1,39 @@
-using System;
 using UnityEngine;
 using UnityEngine.Events;
 
 public class ButtonManager : MonoBehaviour 
 {
-    public UnityEvent PauseGame = new UnityEvent();
-    public UnityEvent UnpauseGame = new UnityEvent();
+    //public UnityEvent PauseGame = new UnityEvent();
+    //public UnityEvent UnpauseGame = new UnityEvent();
+    public UnityEvent onGameNextScene;
+    public UnityEvent onGameReturnHome;
+    public UnityEvent onGameRestart;
+    public UnityEvent onGamePaused;
+    public UnityEvent onGameUnpaused;
+    public UnityEvent onHighscoreReset;
 
     public void NextSceneButtonClick()
     {
-        GameManager.instance.GameNextScene();
+        onGameNextScene.Invoke();
     }
     public void RestartSceneButtonClick()
     {
-        GameManager.instance.GameRestart();
+        onGameRestart.Invoke();
     }
     public void HomeSceneButtonClick()
     {
-        GameManager.instance.GameReturnHome();
+        onGameReturnHome.Invoke();
     }
     public void ResetHighScoreButtonClick()
     {
-        GameManager.instance.ResetHighScore();
+        onHighscoreReset.Invoke();
     }
     public void MenuButtonClick()
     {
-        Time.timeScale = 0f;
-        PauseGame.Invoke();
+        onGamePaused.Invoke();
     }
     public void ResumeButtonClick()
     {
-        Time.timeScale = 1.0f;
-        UnpauseGame.Invoke();
+        onGameUnpaused.Invoke();
     }
 }

@@ -46,7 +46,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 341ded9beea9407f8152d595b4556417, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TrashCollector
+  onTrashDelivered:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 11400000, guid: c4cd05d6bde9d824aaf173fb6f16818f, type: 2}
+        m_TargetAssemblyTypeName: SimpleGameEvent, Assembly-CSharp
+        m_MethodName: Raise
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   dropOffPoint: {fileID: 174694189603112415}
+  gameScore: {fileID: 11400000, guid: 3b1fe325f71334282a4cb151fb49a5bd, type: 2}
   deliveryRadius: 3
 --- !u!1 &1015385824856446570
 GameObject:

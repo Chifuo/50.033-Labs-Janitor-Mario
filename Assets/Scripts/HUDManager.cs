@@ -10,8 +10,7 @@ public class HUDManager : MonoBehaviour
     private TMP_Text scoreLabel;
     private TMP_Text deliveriesLabel;
     private TMP_Text finalscoreLabel;
-    private GameManager manager;
-
+    [SerializeField] private IntVariable gameScore;
     private void Awake()
     {
         if (scoreText != null)
@@ -20,25 +19,13 @@ public class HUDManager : MonoBehaviour
             deliveriesLabel = deliveriesText.GetComponent<TMP_Text>();
         if (finalscoreText  != null)
             finalscoreLabel = finalscoreText.GetComponent<TMP_Text>();
+        Debug.Log(finalscoreLabel.text);
     }
 
     private void Start()
     {
-        manager = GameManager.instance;
-        manager.scoreChange.AddListener(SetScore);
-        manager.deliveryCountChange.AddListener(SetDeliveries);
-        manager.gameOver.AddListener(SetFinalScore);
-        SetScore(manager.Score);
-        SetDeliveries(manager.GoombaDeliveries);
-    }
-
-    private void OnDestroy()
-    {
-        if (manager == null)
-            return;
-        manager.scoreChange.RemoveListener(SetScore);
-        manager.deliveryCountChange.RemoveListener(SetDeliveries);
-        manager.gameOver.RemoveListener(SetFinalScore);
+        SetScore(gameScore.Value);
+        SetDeliveries(gameScore.Deliveries);
     }
 
     public void SetScore(int score)
@@ -49,8 +36,14 @@ public class HUDManager : MonoBehaviour
 
     public void SetFinalScore()
     {
-        if(finalscoreLabel != null)
-            finalscoreLabel.text = $"Score: {GameManager.instance.Score}";
+        Debug.Log("settingfinalscore");
+        if (finalscoreLabel != null)
+        {
+            finalscoreLabel.text = $"Score: {gameScore.Value}";
+            Debug.Log("finalscorediaplay");
+        }
+        Debug.Log("nodisplayfound");
+
     }
 
     public void SetDeliveries(int count)

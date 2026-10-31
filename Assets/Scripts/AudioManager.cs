@@ -12,33 +12,13 @@ public class AudioManager : MonoBehaviour
     private AudioSource playerPickupTrash;
     private AudioSource goombaPickupTrash;
     private AudioSource goombaGetShooed;
-    private GameManager manager;
     private void Start()
     {
         goodbyeJojo = GameoverSound.GetComponent<AudioSource>();
         playerPickupTrash = PointIncreaseSound.GetComponent<AudioSource>();
         goombaPickupTrash = DeliveryIncreaseSound.GetComponent<AudioSource>();
         goombaGetShooed = GoombaShooedSound.GetComponent<AudioSource>();
-
-        manager = GameManager.instance;
-        manager.gameOver.AddListener(PlayGameoverSound);
-        manager.scoreIncreased.AddListener(PlayPointIncreaseSound);
-        manager.goombaDeliveredTrash.AddListener(PlayDeliverIncreaseSound);
-        manager.goombaShooed.AddListener(PlayGoombaShooedSound);
-        manager.playerSpedup.AddListener(PlaySpeedupSound);
     }
-
-    private void OnDestroy()
-    {
-        if (manager == null)
-            return;
-        manager.gameOver.RemoveListener(PlayGameoverSound);
-        manager.scoreIncreased.RemoveListener(PlayPointIncreaseSound);
-        manager.goombaDeliveredTrash.RemoveListener(PlayDeliverIncreaseSound);
-        manager.goombaShooed.RemoveListener(PlayGoombaShooedSound);
-        manager.playerSpedup.RemoveListener(PlaySpeedupSound);
-    }
-
     public void PlayGameoverSound()
     {
         if (backgroundMusic != null)
@@ -57,8 +37,7 @@ public class AudioManager : MonoBehaviour
     {
         goombaGetShooed.Play();
     }
-
-    private void PlaySpeedupSound()
+    public void PlaySpeedupSound()
     {
         if (speedupSound != null)
             speedupSound.Play();

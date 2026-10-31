@@ -9,6 +9,7 @@ public class EnemyMovement : MonoBehaviour
     [SerializeField] private GoombaShoo shoo;
     [SerializeField] private GoombaVisuals visuals;
     [SerializeField] private GoombaTrashCarrier trashCarrier;
+    [SerializeField] private IntVariable gameScore;
 
     private Rigidbody2D enemyBody;
     private BoxCollider2D enemyCollider;
@@ -19,7 +20,6 @@ public class EnemyMovement : MonoBehaviour
     public Vector2 BodySize => bodySize;
     public Vector2 ColliderOffset => colliderOffset;
     public BoxCollider2D BodyCollider => enemyCollider;
-    public bool IsGameOver => GameManager.instance != null && GameManager.instance.IsGameOver;
     public bool IsCarryingTrash => trashCarrier != null && trashCarrier.IsCarryingTrash;
     public bool HasActiveRoute => initialized && isActiveAndEnabled && moveSpeed > 0f &&
         collector != null && waypointIndex < path.Count &&
@@ -54,12 +54,12 @@ public class EnemyMovement : MonoBehaviour
     private void Update()
     {
         collector = FindFirstObjectByType<TrashCollector>();
-        if (IsGameOver)
+        if (gameScore.GameOver)
         {
             shoo.EndFight();
             return;
         }
-
+            
         shoo.CheckContact();
         // Uncomment to stop planning while touching Mario.
         // if (shoo.IsInteracting)
@@ -78,7 +78,7 @@ public class EnemyMovement : MonoBehaviour
     private void FixedUpdate()
     {
         enemyBody.linearVelocity = Vector2.zero;
-        if (IsGameOver)
+        if (gameScore.GameOver)
             return;
         // Uncomment to stop moving while touching Mario.
         // if (shoo.IsInteracting)

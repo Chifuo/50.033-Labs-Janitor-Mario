@@ -5,28 +5,21 @@ public class StageProgression : MonoBehaviour
 {
     [SerializeField] private int scoreThreshold = 10;
     [SerializeField] private string nextScene = "Stage-2";
-    private GameManager manager;
+    [SerializeField] private IntVariable gameScore;
     private bool loading;
 
-    private void Start()
+    private void Update()
     {
-        manager = GameManager.instance;
-        manager.scoreChange.AddListener(CheckScore);
-        CheckScore(manager.Score);
+        CheckScore(gameScore.Value);
+        Debug.Log("checking score" + gameScore.Value);
     }
 
     private void CheckScore(int score)
     {
-        if (loading || manager.IsGameOver || score < scoreThreshold)
+        if (loading || gameScore.GameOver || score < scoreThreshold)
             return;
 
         loading = true;
         SceneManager.LoadSceneAsync(nextScene);
-    }
-
-    private void OnDestroy()
-    {
-        if (manager != null)
-            manager.scoreChange.RemoveListener(CheckScore);
     }
 }
