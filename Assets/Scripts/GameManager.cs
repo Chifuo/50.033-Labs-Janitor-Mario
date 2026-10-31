@@ -21,7 +21,10 @@ public class GameManager : MonoBehaviour
     {
         rankProgress.ResetForNewRun();
         buffProgress.ResetForNewRun();
-        gameScore.ApplyDefaultValues();
+        if (SceneManager.GetActiveScene().name == "Stage-1")
+        {
+            gameScore.ApplyDefaultValues();
+        }
         Time.timeScale = 1f;
     }
 
