@@ -33,8 +33,6 @@ public class GameManager : MonoBehaviour
     {
         onGameStart.Invoke();
         InitialState();
-        SetScore(gameScore.Value);
-        onDeliveryCountChange.Raise(gameScore.Deliveries);
     }
     public void GameRestart()
     {
@@ -80,8 +78,6 @@ public class GameManager : MonoBehaviour
         onGameOver.Invoke();
         rankProgress.MarkGameOver();
         gameScore.ApplyGameOver();
-        
-        Debug.Log("Final Score:" + gameScore.Value);
     }
 
     public void GamePaused()

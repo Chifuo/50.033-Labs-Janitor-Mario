@@ -3,11 +3,7 @@ using UnityEngine;
 [CreateAssetMenu(menuName = "Janitor Mario/Int Variable")]
 public class IntVariable : ScriptableObject
 {
-    [SerializeField] private int baseValue = 0;
     [SerializeField] private int previousHighestValue;
-    [SerializeField] private int baseDeliveries = 0;
-    [SerializeField] private int baseShooed = 0; 
-    [SerializeField] private bool baseGameOver = false;
     [System.NonSerialized] private int value;
     [System.NonSerialized] private int deliveries;
     [System.NonSerialized] private int shooed;
@@ -72,10 +68,10 @@ public class IntVariable : ScriptableObject
     }
     public void ApplyDefaultValues()
     {
-        Value = baseValue;
-        Deliveries = baseDeliveries;
-        Shooed = baseShooed;
-        GameOver = baseGameOver;
+        Value = 0;
+        Deliveries = 0;
+        Shooed = 0;
+        GameOver = false;
 
     }
     public void ApplyGameOver()

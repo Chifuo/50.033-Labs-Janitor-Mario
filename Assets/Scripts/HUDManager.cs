@@ -19,7 +19,6 @@ public class HUDManager : MonoBehaviour
             deliveriesLabel = deliveriesText.GetComponent<TMP_Text>();
         if (finalscoreText  != null)
             finalscoreLabel = finalscoreText.GetComponent<TMP_Text>();
-        Debug.Log(finalscoreLabel.text);
     }
 
     private void Start()
@@ -36,14 +35,10 @@ public class HUDManager : MonoBehaviour
 
     public void SetFinalScore()
     {
-        Debug.Log("settingfinalscore");
         if (finalscoreLabel != null)
         {
             finalscoreLabel.text = $"Score: {gameScore.Value}";
-            Debug.Log("finalscorediaplay");
         }
-        Debug.Log("nodisplayfound");
-
     }
 
     public void SetDeliveries(int count)

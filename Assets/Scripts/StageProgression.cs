@@ -11,7 +11,6 @@ public class StageProgression : MonoBehaviour
     private void Update()
     {
         CheckScore(gameScore.Value);
-        Debug.Log("checking score" + gameScore.Value);
     }
 
     private void CheckScore(int score)
